@@ -9,7 +9,6 @@ rows = cur.fetchall()
 
 print(rows)
 
-
 cur.close()
 conn.close()  # 6. DB 닫기 (=연결 해제)
 print('OK~')

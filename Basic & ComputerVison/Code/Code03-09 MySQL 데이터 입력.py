@@ -1,7 +1,7 @@
 import pymysql
 
 conn = pymysql.connect(host="192.168.56.104", user="root", password="1234",
-                       db="samsungDB", charset="utf8")   # 1. DB 연결
+                       db="samsungDB", charset="utf8")  # 1. DB 연결
 cur = conn.cursor()  # 2. 커서 생성 (트럭, 연결로프)
 sql = "CREATE TABLE IF NOT EXISTS userTable2(userId INT, userName CHAR(5))"
 cur.execute(sql)
