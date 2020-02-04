@@ -137,20 +137,20 @@ OpenCU는 C++에서 지원이 잘되는데 파이썬에서도 호환이 잘 된�
     - 딕셔너리 생성
 
         ``` python
-        mydic = {'키1': '값1', '키2': '값2', '키3': '값3'}
+        mydic = {}  # 빈 딕셔너리 생성
+        lux1 = dict(health=490, mana=334, melee=550, armor=18.72)
+        lux2 = dict(zip(['health', 'mana', 'melee', 'armor'], [490, 334, 550, 18.72]))
+        lux3 = dict([('health', 490), ('mana', 334), ('melee', 550), ('armor', 18.72)])
+        lux4 = dict({'health': 490, 'mana': 334, 'melee': 550, 'armor': 18.72})
         ```
 
     - 딕셔너리 조작 함수
 
         ``` python
-        mydic
-        items()
-        keys()
-        values()
-        update()
-        pop()
-        reverse()
-        sort()
+        mydic = {'키1': '값1', '키2': '값2', '키3': '값3'}
+        mydic.mydic.items()  # dict_items([('키1', '값1'), ('키2', '값2'), ('키3', '값3')])
+        mydic.keys()  # dict_keys(['키1', '키2', '키3'])
+        mydic.values()  # dict_values(['값1', '값2', '값3'])
         ```
 
     - 딕셔너리 정렬
@@ -202,17 +202,19 @@ a = [10, 20, 30, 40, 50]
 b = 'python is fun'
 
 print(a[2:4])  # 30, 40
-print(b[2:4])  # tho
+print(b[2:4])  # th
 ```
-> \[참고\] 함수와 메서드
+\[참고\] 함수와 메서드
+> 
+> 함수는 함수이름(매개변수)로 구성되어있다.
 
-``` python
-# 함수는 함수이름(매개변수)로 구성되어있다.
-len(ss)
-# 메서드는 클래스에서 만든 함수라고 생각하면된다.
-ss = 'abcd'  # ss라는 객체 생성(문자열 클래스로 부터)
-ss.upper()  # 문자열 클래스의 upper 이라는 매소드 호출
-```
+    len(ss)
+
+> 메서드는 클래스에서 만든 함수라고 생각하면된다.
+
+    ss = 'abcd'  # ss라는 객체 생성(문자열 클래스로 부터)
+    ss.upper()  # 문자열 클래스의 upper 이라는 매소드 호출
+
 
 문자열도 리스트처럼 인덱싱이 가능하다는 것이다.
 
@@ -238,22 +240,50 @@ ss.upper()  # 문자열 클래스의 upper 이라는 매소드 호출
     ss.endswith('y.')  # True, 끝 글자가 일치하면 True
 
     s2 = '     Py tho n  '
-    s2.strip()
-    s2.rstrip()
-    s2.lstrip()
+    s2.strip()  # 'Py tho n'
+    s2.rstrip()  # '     Py tho n'
+    s2.lstrip()  # 'Py tho n  '
+    s2.replace('Py tho n', '파이썬')  # '     파이썬  '
+    
+    s3 = 'Python을 열심히 공부 중'
+    s3.split()  # ['Python을', '열심히', '공부', '중']
+    s4 = '하나:둘:셋'
+    s4.split(':')  # ['하나', '둘', '셋']
+    s5 = '하나\n둘\n셋\n'
+    s5.splitlines()  # ['하나', '둘', '셋']
+    s6 = s5.splitlines()  
+    ' '.join(s6)  # '하나 둘 셋'
+
+    ss = '파이썬'
+    ss.center(10)  #        파이썬
+    ss.center(10, '-')  # ---파이썬----
+    ss.ljust(10) # 파이썬
+    ss.rjust(10) #        파이썬
+    ss.zfill(10) # 0000000파이썬
+
+    '1234'.isdigit()  # True
+    'abcd'.isalpha()  # True
+    'abc123'.isalnum()  # True
+    'adcd'.islower()  # True
+    'ABCD'.isupper()  # True
+    ' '.isspace()  # True
     ```
 
-
 #### 9장- 함수와 모듈
+
+모듈이란 .py 파일로 저장되어 있는 것이다. 패키지란 모듈들의 모음 즉, 폴더개념이다.
 
 모듈 불러오는 법
 
 ```python
-import random  # random 이라는 폴더를 임포트하여 폴더 안 모듈들과 함수를 사용할 수 있다.
+import random  # random 이라는 모듈을 임포트하여 모듈 안 함수들과 변수 등을 사용할 수 있다.
 import random as rd  # random 대신에 rd 를 붙일 수 있다.
 from random import randrange, randint  # random에 있는 특정 함수들만 임포드하여 쓴다.
-from random import *  # random 폴더에 모든 함수들을 임포트한다.
-# random 을 안붙일 수 있다. 하지만 이 방법은 추천하지 않는다. 충돌 발생 우려, 코드해석 어려움
+from random import *  # random 모듈안에 모든 함수들을 임포트한다.
+# 이 방법을 사용하면 random 을 안붙일 수 있다.
+# 하지만 이 방법은 추천하지 않는다. 충돌 발생 우려, 코드해석 어려움
+
+from 패키지명.모듈명 import 함수명  # 특정 함수만 호출하고 싶은 경우
 ```
 
 ## 코드
@@ -482,15 +512,125 @@ from random import *  # random 폴더에 모든 함수들을 임포트한다.
     ```
 - 04-10 과제1
     ```python
+    # Code04-10 과제 Sort 들
+
+    def bubble_sort(data):
+        new_data = data[:]
+        for i in range(len(new_data)-1):
+            for j in range(len(new_data)-i-1):
+                if new_data[j] > new_data[j+1]:
+                    new_data[j], new_data[j+1] = new_data[j+1], new_data[j]
+        return new_data
+
+
+    def select_sort(data):
+        new_data = data[:]
+        for i in range(len(new_data)-1):
+            min_idx = i
+            for j in range(i, len(new_data)):
+                if new_data[min_idx] > new_data[j]:
+                    min_idx = j
+            new_data[i], new_data[min_idx] = new_data[min_idx], new_data[i]
+        return new_data
+
+
+
+    def quick_sort(data):
+        new_data = data[:]
+        if len(new_data) <= 1:
+            return new_data
+        
+        pivot = new_data[len(new_data)//2]
+        left_data, middle_data, right_data = [], [], []
+        for i in new_data:
+            if i < pivot:
+                left_data.append(i)
+            elif i > pivot:
+                right_data.append(i)
+            else:
+                middle_data.append(i)
+        
+        return quick_sort(left_data) + middle_data + quick_sort(right_data)
+
+    import random
+
+    data = [0] * 10
+    for i in range(10):
+        data[i] = random.randrange(100000)
+
+    print([i[2:] for i in map(hex, data)])
+    print([i[2:] for i in map(hex, select_sort(data))])
+    print([i[2:] for i in map(hex, bubble_sort(data))])
+    print([i[2:] for i in map(hex, quick_sort(data))])
+    print([i[2:] for i in map(hex, data)])
 
     ```
 
 - 04-10 과제2
     ```python
+    # Code04-10 과제2 Sort 들
+
+    def get_num(num):
+        result = ''
+        for c in str(hex(num)[2:]):
+            if c.isdigit():
+                result += c
+
+        return int(result)
+
+
+    def bubble_sort(data):
+        new_data = data[:]
+        for i in range(len(new_data)-1):
+            for j in range(len(new_data)-i-1):
+                if get_num(new_data[j]) > get_num(new_data[j+1]):
+                    new_data[j], new_data[j+1] = new_data[j+1], new_data[j]
+        return new_data
+
+
+    def select_sort(data):
+        new_data = data[:]
+        for i in range(len(new_data)-1):
+            min_idx = i
+            for j in range(i, len(new_data)):
+                if get_num(new_data[min_idx]) > get_num(new_data[j]):
+                    min_idx = j
+            new_data[i], new_data[min_idx] = new_data[min_idx], new_data[i]
+        return new_data
+
+
+
+    def quick_sort(data):
+        new_data = data[:]
+        if len(new_data) <= 1:
+            return new_data
+        
+        pivot = get_num(new_data[len(new_data)//2])
+        left_data, middle_data, right_data = [], [], []
+        for i in new_data:
+            if get_num(i) < pivot:
+                left_data.append(i)
+            elif get_num(i) > pivot:
+                right_data.append(i)
+            else:
+                middle_data.append(i)
+        
+        return quick_sort(left_data) + middle_data + quick_sort(right_data)
+
+    import random
+
+    data = [0] * 10
+    for i in range(10):
+        data[i] = random.randrange(100000)
+
+    print([i[2:] for i in map(hex, data)])
+    print([i[2:] for i in map(hex, bubble_sort(data))])
+    print([i[2:] for i in map(hex, select_sort(data))])
+    print([i[2:] for i in map(hex, quick_sort(data))])
+    print([i[2:] for i in map(hex, data)])
 
     ```
 ## 과제
 
 1. 16진수 정렬 -> 선택 정렬, 버블 정렬, 퀵 정렬(p.219)
 2. 문자, 숫자 정렬 -> 선택 정렬, 버블 정렬, 퀵 정렬(p.283)
-
