@@ -8,8 +8,8 @@
 ### [Day03](./Markdown/python_03.md) 서버의 DB 관리하기, Python 기초
 ### [Day04](./Markdown/python_04.md) 파이썬 기본문법
 ### [Day05](./Markdown/python_05.md) 파이썬 기본문법
-### [Day06](./Markdown/python_06.md)
-### [Day07](./Markdown/python_07.md)
+### [Day06](./Markdown/python_06.md) 파이썬 데이터 시각화
+### [Day07](./Markdown/python_07.md) 파이썬 데이터 시각화
 ### [Day08](./Markdown/python_08.md)
 ### [Day09](./Markdown/python_09.md)
 ### [Day10](./Markdown/python_10.md)
