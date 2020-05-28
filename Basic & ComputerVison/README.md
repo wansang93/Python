@@ -7,7 +7,7 @@
 ### [Day02](./Markdown/python_02.md) 서버 운영해보기
 ### [Day03](./Markdown/python_03.md) 서버의 DB 관리하기, Python 기초
 ### [Day04](./Markdown/python_04.md) 파이썬 기본문법
-### [Day05](./Markdown/python_05.md)
+### [Day05](./Markdown/python_05.md) 파이썬 기본문법
 ### [Day06](./Markdown/python_06.md)
 ### [Day07](./Markdown/python_07.md)
 ### [Day08](./Markdown/python_08.md)
