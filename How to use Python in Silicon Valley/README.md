@@ -281,6 +281,10 @@ expected period: 5days
 
 68. Import 문 과 AS
 
+    패키지를 만들 때 폴더안에 \_\_init\_\_.py 파일을 반드시 만들어 줘서 패키지 파일임을 알려야 한다.
+
+    이 파일이 없을 경우 패키지로 인식되지 않는다.
+
     ``` python
     import lesson_package.utils
     from lesson_package import utils
@@ -309,6 +313,12 @@ expected period: 5days
 
 69. 절대 경로와 상대 경로의 Import
 
+    ``` python
+    from lesson_package.tools import utils
+    from ..tools import utils
+    ```
+    
+    같은 디렉토리를 가르키고 있지만 첫번째 방법을 추천, 명확성때문
 
 70. 애스터리스크의 import 와 \_\_init\_\_.py, \_\_all\_\_의 의미
 71. ImportError 의 쓰임
@@ -327,5 +337,4 @@ expected period: 5days
 
 ### Section 23: Final Message
 
-tanks! さかい じゅん! :sunglasses::+1:
-
+thanks! さかい じゅん! :sunglasses::+1:
