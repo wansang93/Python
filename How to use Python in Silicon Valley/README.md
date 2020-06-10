@@ -2,7 +2,7 @@
 
 This is a lecture how to use Python in Silicon Valley
 
-Link -> [https://www.udemy.com/share/102aRUCEIacV5QTHQ=/](https://www.udemy.com/share/102aRUCEIacV5QTHQ=/)
+Lecture Link -> [https://www.udemy.com/share/102aRUCEIacV5QTHQ=/](https://www.udemy.com/share/102aRUCEIacV5QTHQ=/)
 
 start at 09 June, 2020
 
@@ -27,7 +27,7 @@ expected period: 5days
 6. install Python on Windows
 
     아나콘다는 유용한 패치지를 다운로드 합니다.
-    (Anaconda install a lot of useful python packages like skit-learn.)
+    (Anaconda installs a lot of useful python packages like skit-learn.)
 
 7. install Pycharm on Windows
 
@@ -39,7 +39,7 @@ expected period: 5days
 8. 변수 선언
 
     ``` python
-    name: str = '1'  # 이렇게 파이썬에서도 변수명에 타입을 설정해 줄 수 있다.
+    name: str = '1'  # 이렇게 파이썬에서도 변수명에 타입을 설정해 줄 수 있음
     ```
 
 9. print로 출력하기
@@ -47,31 +47,30 @@ expected period: 5days
     ``` python
     print('Hi', 'Mike', sep=', ', end='.\n')
     # sep는 두 문자 사이에 무엇을 넣을 수 있냐는 옵션이고
-    # end는 프린트문이 끝나고 실행할 다음 문자라고 생각하면 된다.
+    # end는 프린트문이 끝나고 실행할 다음 문자라고 생각하면 됨
     ```
 
 10. 수치
 
-    수치끼리는 잘 더하고 뺄 수 있다.
-
     ``` python
     import math
-    print(help(math))  # math 패키지 사용법을 볼 수 있다.
+    print(help(math))  # math 패키지 사용법을 볼 수 있음
     ```
 
 11. 문자열
 
-    엔터 처리가 되는 경우 r(raw data)를 사용하면 된다.
+    엔터 처리가 되는 경우 r(raw data)를 사용하면 됨
+
     ``` python
     'C:\name\name'  # \n을 줄바꿈으로 인식하기 때문에
-    r'C:\name\name'  # 이렇게 표현하면 편하다.
+    r'C:\name\name'  # 이렇게 표현하면 편함
     ```
 
     문자열이 긴경우
     
-    1. \(back slash)를 사용하면 된다.
+    1. \(back slash)를 사용
     ``` python
-    # 이 경우 첫 줄과 마지막 줄이 항상 \n 이 들어가 있다.
+    # 이 경우 첫 줄과 마지막 줄이 항상 \n 이 들어감
     ''' 
     line1
     line2
@@ -79,27 +78,26 @@ expected period: 5days
     '''
     ```
     ``` python
-    # 따라서 \를 써주면 \는 \n을 없에 줄 수 있다.
+    # 따라서 \를 써주면 \는 \n을 없에 줄 수 있음
     '''\
     line1
     line2
     line3\
     '''
     ```
-    2. 문자열 2개를 따로 적어 소괄호로 합치기도 한다.(unpacking의 원리)
+    2. 문자열 2개를 따로 적어 소괄호로 합치기도 함(unpacking의 원리)
 
     ``` python
+    # 한줄로 처리됨
     s = ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
     ```
 
 12. 문자열 인덱스와 슬라이스
 
-    문자도 인덱싱 슬라이싱 할 수 있다.
-
 13. 문자 메소드
 
-    startswith, find, rfind, count, capitalize, title, upper, lower, replace 등이 있다.
+    startswith, find, rfind, count, capitalize, title, upper, lower, replace 등이 있음
 
     ``` python
     s = 'My name is Mike. Hi Mike.'
@@ -109,9 +107,9 @@ expected period: 5days
 
 14. 문자의 대입(.fromat())
 
-    format 함수로 변수를 바로 문자열로 넣을 수 있다.
+    format 함수로 변수를 바로 문자열로 넣을 수 있음
 
-    {:} 에서 : 기준으로 앞쪽은 순번 뒷쪽은 옵션을 넣을 수 있다.
+    {:} 에서 : 기준으로 앞쪽은 순번 뒷쪽은 옵션을 넣을 수 있음
 
     ``` python
     'a is {}'.format('a')  # a is a
@@ -121,18 +119,19 @@ expected period: 5days
 
     format 의 단점
 
-    변수명에 변수명을 또 넣어주기 때문에 느리다. 따라서 다음 장의 f-string을 추천한다.
+    변수명에 변수명을 또 넣어주기 때문에 느림 따라서 다음 장의 f-string을 추천함
 
     ``` python
     name = 'Mike'
     user_id = 'm0303'
     print('{name}, {id}'.format(name=name, id=user_id))
     ```
+
 15. f-string
 
     3.6 Ver 이상에서 사용 가능
 
-    빠르고 코드 이해도 쉽고 좋다.
+    빠르고 코드 이해도 쉽고 좋음
     
     왜 더 좋은지 참고 링크 -> [https://realpython.com/python-f-strings/](https://realpython.com/python-f-strings/)
 
@@ -143,7 +142,6 @@ expected period: 5days
     ```
 
 ### Section 04: Data Structure
-
 
 16. 리스트형
 17. 리스트 조작
@@ -203,11 +201,11 @@ expected period: 5days
     dict1.values()
     dict1.items()
 
-    dict1.get('c')  # 해당 값이 없을 때 리턴값이 NoneType 이다.
-    dict1.get('c', 30)  # 해당 값이 없을 때 리턴값이 30 이다. 있으면 그대로를 리턴한다.
+    dict1.get('c')  # 해당 값이 없을 때 리턴값이 NoneType
+    dict1.get('c', 30)  # 해당 값이 없을 때 리턴값이 30 임. 있으면 그대로를 리턴함
     ```
 
-    딕셔너리는 해쉬 테이블 구조로 구현되어서 값을 가져오는데 빠르다.
+    딕셔너리는 해쉬 테이블 구조로 구현되어서 값을 가져오는데 빠름
 
 28. 집합형
 29. 집합형 메소드
@@ -448,9 +446,9 @@ expected period: 5days
     
 57. 데코레이터
 
-    Decorator: 감싸준다 포괄한다 이런 의미로 알아두기 바람, 함수의 재사용이 용이함
+    Decorator: 감싸준다 포괄한다는 의미로 알아두기 바람, 함수의 재사용이 용이함
 
-    [데코레이터 설명 link](https://bluese05.tistory.com/30)
+    데코레이터를 잘 설명한 링크 -> [https://bluese05.tistory.com/30](https://bluese05.tistory.com/30)
 
     실습
 
@@ -484,7 +482,7 @@ expected period: 5days
     # # r = f(10, 20)  # 6 wrapper 실행 -> print_info(add_num) wrapper(10, 20)
 
     # # 더 간단히?
-    # # @print_info를 붙인다.
+    # # @print_info를 붙임
     # @print_info
     # def add2_num(a, b):
     #     return a + b
@@ -503,7 +501,7 @@ expected period: 5days
 
     Lambda: 간단하게 만드는 함수, 가독성, 편의성을 위해 사용
 
-    `lambda 매개변수: 결과`
+    `lambda 매개변수: 결괏값`
 
     ``` python
     def change_words(words, func):
@@ -540,17 +538,8 @@ expected period: 5days
     ```
 
 60. 리스트 내포 표기
-
-    list comprehension
-
 61. 사전 내포 표기
-
-    dictionary comprehension
-
 62. 집합 내포 표기
-
-    set comprehension
-
 63. 제너레이터 내포 표기
 
     튜플이 아닌점만 유의하면 됨
@@ -577,7 +566,7 @@ expected period: 5days
 
 65. 예외 처리
 
-    에러 목록 보는 링크[(https://docs.python.org/3/library/exceptions.html#exception-hierarchy)](https://docs.python.org/3/library/exceptions.html#exception-hierarchy)
+    에러 목록 보는 링크 -> [(https://docs.python.org/3/library/exceptions.html#exception-hierarchy)](https://docs.python.org/3/library/exceptions.html#exception-hierarchy)
 
     ``` python
     l = [1, 2, 3]
@@ -604,7 +593,6 @@ expected period: 5days
     class UppercaseError(Exception):
         pass
 
-
     def check():
         words = ['APPLE', 'orange', 'banana']
         for word in words:
@@ -621,15 +609,15 @@ expected period: 5days
 
 67. 커맨드라인 인수
 
-    콘솔 창에서 `ls`: 파일명, `pwd`: 현재 폴더 위치 를 알려주고 python 파일명.py 는 파이썬을 실행한다.
-    windows 는 `dir`: 파일명, `cd`: 현재 폴더 위치 를 알려준다.
+    콘솔 창에서 `ls`: 파일명, `pwd`: 현재 폴더 위치 를 알려주고 python 파일명.py 는 파이썬을 실행함
+    windows 는 `dir`: 파일명, `cd`: 현재 폴더 위치 를 알려줌
 
     ``` python
     import sys
     print(sys.argv)
     ```
 
-    콘솔창에서 `python lesson.py option1 option2` 를 입력하면 -> `lesson.py, option1, option2` 가 출력된다.
+    콘솔창에서 `python lesson.py option1 option2` 를 입력하면 -> `lesson.py, option1, option2` 가 출력됨
 
     파이참에서 Run -> Edit Configurations -> Select Python -> Click '+' button -> Parameters 에 option1 option2 입력
 
@@ -734,11 +722,11 @@ expected period: 5days
     builtins.print()
     ```
 
-    기본 내장함수 보기: [https://docs.python.org/3/library/functions.html](https://docs.python.org/3/library/functions.html)  
+    기본 내장함수 보기 링크 -> [https://docs.python.org/3/library/functions.html](https://docs.python.org/3/library/functions.html)  
 
 74. 표준 라이브러리
 
-    표준 라이브러리 보기: [https://docs.python.org/3.7/library/index.html](https://docs.python.org/3.7/library/index.html)
+    표준 라이브러리 보기 링크 -> [https://docs.python.org/3.7/library/index.html](https://docs.python.org/3.7/library/index.html)
     
     ``` python
     from collections import defaultdict
@@ -751,7 +739,7 @@ expected period: 5days
 
     다른 사람들이 만든 라이브러리를 download 후 install 해서 쓸 수 있음
 
-    서드파티 라이브러리 보기: [https://pypi.org/](https://pypi.org/)
+    서드파티 라이브러리 보기 링크 -> [https://pypi.org/](https://pypi.org/)
 
     파이참에서 install 하는 방법
 
@@ -799,9 +787,9 @@ expected period: 5days
 
 ### Section 07: Objects and Classes
 
+
+
 ### Section 08: File I/O and System
-
-
 
 ### Section 23: Final Message
 
