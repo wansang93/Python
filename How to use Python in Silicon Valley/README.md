@@ -8,7 +8,7 @@ start at 09 June, 2020
 
 expected period: 5days
 
-## What I learned?
+## Introduction
 
 ### Section 01: Start here
 
@@ -427,7 +427,14 @@ expected period: 5days
 
 56. 클로저
 
-    나중에 사용하고 싶을 때 하는 기술(?)
+    함수를 둘러싼 환경을 유지했다가 나중에 다시 활용하는 기술
+    
+    장점
+    
+    프로그램 흐름을 변수에 저장하여 사용 할 수 있음  
+    클로저의 지역 변수와 코드를 묶어서 사용할 수 있음  
+    클로저의 지역 변수는 바깥에서 접근이 불가해 데이터를 숨기고 싶을 때 활용함  
+
 
     ``` python
     # 순서는 주석처리
@@ -787,9 +794,121 @@ expected period: 5days
 
 ### Section 07: Objects and Classes
 
+78. 클래스의 정의
 
+    파이참에서 원하는 메소드 기능 보기 -> 해당 메소드 드래그 -> 오른쪽 클릭 -> Go to -> Declaration or Usages
+
+    ``` python
+    # object 는 생략 가능
+    class Person(object):
+        pass
+    ```
+
+79. 클래스의 초기화와 클래스 변수
+80. 생성자와 소멸자
+
+    ``` python
+    class Person(object):
+        def __init__(self, name='name'):  # 생성자
+            self.name = name
+            print('객체 생성시 무조건 실행')
+
+        def say_something(self):
+            print('I am {}. hello'.format(self.name))
+            self.run(10)
+
+        def run(self, num):
+            print('run ' * num)
+
+        def __del__(self):  # 소멸자
+            print('객체 소멸시 무조건 실행')
+
+    person = Person('Mike')
+    person.say_something()
+
+    print('#######')
+    ```
+
+81. 클래스의 계승
+82. 메소드의 오버라이드와 super 로 기반 클래스의 메소드 불러오기
+
+    Inheritance(계승, 상속)
+    Overide(오버라이드)
+
+    ``` python
+    class Car():
+        def __init__(self, model=None):
+            self.model = model
+        def run(self):
+            print('run')
+
+    class HyundaiCar(Car):
+        def run(self):
+            print('fast')
+
+    class TeslaCar(Car):
+        def __init__(self, model='S model', enable_auto_run=False):
+            super().__init__(model)
+            self.enable_auto_run = enable_auto_run
+
+        def run(self):
+            print('super fast')
+        
+        def auto_run(self):
+            print('auto run')
+    ```
+
+83. Property 를 사용한 속성의 설정
+
+
+
+
+84. 클래스를 구조체로서 쓸 때의 주의점
+85. 덕타이핑
+86. 추상 클래스
+87. 다중계승
+88. 클래스 변수
+89. 클래스 메소드와 스태틱 메소드
+90. 특수 메소드
 
 ### Section 08: File I/O and System
+
+91. 파일의 작성
+92. with 구문으로 파일을 open 하기
+93. 파일 읽어오기
+94. seek를 써서 이동하기
+95. 쓰기와 읽어오기 모드
+96. 템플릿
+97. CSV 파일에 쓰고 읽어오기
+98. 파일 조작
+99. tarfile 의 압축 및 풀기
+100. zipfile 의 압축 및 풀기
+101. tempfile
+102. subprocess 로 명령어 실행하기
+103. datetime
+
+### Section 09: Ending the Introduction - Coding the Simple Application
+
+104. Windows 와 Mac의 명령어
+105. 간단한 애플리케이션을 만들어 봅시다.
+106. 데모 애플리케이션의 흐름을 설명한 pdf 파일
+107. 데모 애플리케이션 압축 풀기
+108. 샘플 데모 애플리케이션 코드
+109. 샘플 코드의 설계와 폴더 구조의 해설
+110. 샘플 코드의 Views 와 템플릿의 해설
+111. 샘플 코드의 models 와 controller 의 해설
+
+### Section 10: Code Style
+
+112. 코드 스타일을 체크하는 툴의 확인
+113. 스타일 룰
+114. Python 쓰는 방법
+115. 도큐먼트와 Pylint
+116. 문장처럼 Python 적기
+
+## Application
+
+### Section 11: Config and Logging
 
 ### Section 23: Final Message
 
