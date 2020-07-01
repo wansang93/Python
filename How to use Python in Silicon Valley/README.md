@@ -288,6 +288,22 @@ expected period: 5days
 
 39. while 문, continue 문, break 문
 40. while else문
+
+    while문을 완전히 종료할 때만 else문을 실행함  
+    while문안에 break가 걸리면 else문은 실행하지 않음
+
+    ``` python
+    count = 0
+    while count < 5:
+        if count == 2:
+            print(count)
+            break
+        print('while')
+        count += 1
+    else:
+        print('done')
+    ```
+
 41. input 함수
 
     ``` python
@@ -300,6 +316,20 @@ expected period: 5days
 
 42. for 문, break 문, continue 문
 43. for else 문
+
+    for문을 완전히 종료할 때만 else문을 실행함  
+    for문안에 break가 걸리면 else문은 실행하지 않음
+
+    ``` python
+    for fruit in ['apple', 'banana', 'orange']:
+        if fruit == 'banana':
+            print('stop eating')
+            break
+        print(fruit)
+    else:
+        print('I ate all')
+    ```
+
 44. range 함수
 45. enumerate 함수
 46. zip 함수
@@ -909,6 +939,102 @@ expected period: 5days
 ## Application
 
 ### Section 11: Config and Logging
+
+### Section 20: Data Analysis
+
+252. 데이터 해석의 개념
+
+    ![데이터 해석 개념](./data_analyst/data_analyst/concept.png)
+
+    데이터 웨어하우스: 데이터베이스와 비슷한 개념, 사람에 따라 같은 개념으로 보기도 함  
+    데이터만 보존하는 곳 or 데이터 보존 및 데이터베이스 기능 추가
+
+253. Jupyter Notebook
+
+    help 함수 대신에 ? 로 부를수도 있다.  
+    ?? 두개를 쓰면 함수 정보를 볼 수 있다.
+    ``` python
+    import os
+    os ?  # help(os)
+    os.path.join??
+    ```
+
+254. numpy
+
+    ``` python
+    # 0 부터 100까지 10개를 균일하게 나눠서 배열 만들기
+    np.linspace(0, 100, 10)
+    """
+    array([  0.        ,  11.11111111,  22.22222222,  33.33333333,
+        44.44444444,  55.55555556,  66.66666667,  77.77777778,
+        88.88888889, 100.        ])
+    """
+
+    # 넘파이 프린트 세팅을 10000개로 하기
+    np.set_printoptions(threshold=10000)
+
+    # 넘파이 한번에 합치기
+    a = np.arange(5)
+    b = np.arange(0, 10, 2)
+    z = np.arange(0, 100, 20)
+    np.vstack([a, b, z])
+    """
+    array([[ 0,  1,  2,  3,  4],
+       [ 0,  2,  4,  6,  8],
+       [ 0, 20, 40, 60, 80]])
+    """
+    np.hstack([a, b, z])
+    """
+    array([ 0,  1,  2,  3,  4,  0,  2,  4,  6,  8,  0, 20, 40, 60, 80])
+    """
+
+    import matplotlib.pyplot as plt
+
+    # 주피터 노트북 안에서 그리기
+    %matplotlib inline
+
+    # 평균 2, 표준편차 0.5, 10,000개의 데이터
+    v = np.random.normal(2, 0.5, 10000)
+
+    plt.hist(v, bins=50, density=1)
+    plt.show()
+    ```
+
+255. pandas
+
+    ``` python
+    df = DataFrame(np.random.randn(6, 4),
+                   index=pd.date_range('20200628', periods=6))
+    df
+    ```
+
+256. matplotlib
+
+
+257. scikit-learn
+
+    1. 데이터를 우선 가저온다.
+    2. 데이터를 교차 검증 부분에서 훈련용, 테스트용으로 나눈다.
+    3. 알고리즘을 불러온다.
+    4. 기계학습을 시킨다.
+    5. 검증을 한다.
+    6. 예측을 한다.
+
+258. 주가의 데이터 해석과 예측
+
+    1. 설계
+    2. 데이터 웨어하우스 구축: 구축 후 데이터 확인
+    3. 데이터 마이닝: 필요한 정보들을 추출해 변환
+    4. 머신러닝: 데이터를 적절하게 변환
+    5. 머신러닝을 돌린 후 정확도 확인
+    6. 예상값 획득
+    7. REST API 사용해 예상값 전달 후 결과 예측
+    
+    [딥러닝 텐서플로 튜토리얼 링크](https://www.tensorflow.org/tutorials/deep_cnn)
+
+259. 데이터 해석 섹션의 소스코드
+
+    [소스 코드](./20%20Data%20Analysis/teacher's%20data_analyst/)
 
 ### Section 23: Final Message
 
