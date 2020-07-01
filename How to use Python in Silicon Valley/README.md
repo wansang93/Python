@@ -942,14 +942,14 @@ expected period: 5days
 
 ### Section 20: Data Analysis
 
-252. 데이터 해석의 개념
+1. 데이터 해석의 개념
 
-    ![데이터 해석 개념](./data_analyst/data_analyst/concept.png)
+    ![데이터 해석 개념](./20.%20Data%20Analysis/Data%20Analysis/concept.png)
 
     데이터 웨어하우스: 데이터베이스와 비슷한 개념, 사람에 따라 같은 개념으로 보기도 함  
     데이터만 보존하는 곳 or 데이터 보존 및 데이터베이스 기능 추가
 
-253. Jupyter Notebook
+2. Jupyter Notebook
 
     help 함수 대신에 ? 로 부를수도 있다.  
     ?? 두개를 쓰면 함수 정보를 볼 수 있다.
@@ -959,7 +959,7 @@ expected period: 5days
     os.path.join??
     ```
 
-254. numpy
+3. numpy
 
     ``` python
     # 0 부터 100까지 10개를 균일하게 나눠서 배열 만들기
@@ -1000,7 +1000,7 @@ expected period: 5days
     plt.show()
     ```
 
-255. pandas
+4. pandas
 
     ``` python
     df = DataFrame(np.random.randn(6, 4),
@@ -1008,10 +1008,10 @@ expected period: 5days
     df
     ```
 
-256. matplotlib
+5. matplotlib
 
 
-257. scikit-learn
+6. scikit-learn
 
     1. 데이터를 우선 가저온다.
     2. 데이터를 교차 검증 부분에서 훈련용, 테스트용으로 나눈다.
@@ -1020,7 +1020,7 @@ expected period: 5days
     5. 검증을 한다.
     6. 예측을 한다.
 
-258. 주가의 데이터 해석과 예측
+7. 주가의 데이터 해석과 예측
 
     1. 설계
     2. 데이터 웨어하우스 구축: 구축 후 데이터 확인
@@ -1032,7 +1032,7 @@ expected period: 5days
     
     [딥러닝 텐서플로 튜토리얼 링크](https://www.tensorflow.org/tutorials/deep_cnn)
 
-259. 데이터 해석 섹션의 소스코드
+8. 데이터 해석 섹션의 소스코드
 
     [소스 코드](./20%20Data%20Analysis/teacher's%20data_analyst/)
 
