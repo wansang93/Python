@@ -877,7 +877,7 @@ expected period: 5days
             print('fast')
 
     class TeslaCar(Car):
-        def __init__(self, model='S model', enable_auto_run=False):
+        def __init__(self, model='S model', enable_auto_run=False):  # 오버라이드
             super().__init__(model)
             self.enable_auto_run = enable_auto_run
 
@@ -890,16 +890,212 @@ expected period: 5days
 
 83. Property 를 사용한 속성의 설정
 
+    - ```_``` -> 명시적으로 클래스 안의 값을 안바꿨으면 좋겠다는 표현
+    - ```__``` -> 명시적, 기능적으로 클래스 안의 값을 외부에서 접근 불가(Private)
 
+    메소드를 통해 값을 가져오거나 저장하는 경우 Property를 사용
 
+    ``` python
+    class Car():
+        def __init__(self, model=None):
+            self.model = model
+        def run(self):
+            print('run')
+
+    class HyundaiCar(Car):
+        def run(self):
+            print('fast')
+
+    class TeslaCar(Car):
+        def __init__(self, model='S model',
+                    enable_auto_run=False,
+                    passwd='123'):
+            super().__init__(model)
+            self._enable_auto_run = enable_auto_run
+            self.passwd = passwd
+            self.__now_speed = 10  # private 설정, 외부에서 접근 불가
+
+        @property  # getter
+        def enable_auto_run(self):
+            return self._enable_auto_run
+
+        @enable_auto_run.setter  # setter
+        def enable_auto_run(self, is_enable):
+            if self.passwd == '456':
+                self._enable_auto_run = is_enable
+            else:
+                raise ValueError
+
+        def run(self):
+            print(self.__now_speed)
+            print('super fast')
+        
+        def auto_run(self):
+            print('auto run')
+
+    tesla_car = TeslaCar(passwd='456')
+    print(tesla_car.enable_auto_run)  # getter로 값 보기
+    tesla_car.enable_auto_run = True  # setter로 값 변경
+    print(tesla_car.enable_auto_run)  # getter로 값 보기
+    tesla_car.run()
+    # tesla_car.__now_speed  # __-> private으로 설정했기 때문에 attribute Error 발생
+    ```
 
 84. 클래스를 구조체로서 쓸 때의 주의점
+    
+    클래스 안에 속성값이 없어도 새로 만들거나 재정의를 하기 때문에 주의할 필요가 있음
+
+    ``` python
+    class T():
+        pass
+
+    T.name = 'mike'
+    print(T.name)  # 'mike' 출력
+    # T 클래스의 속성에는 name이 없지만 위에 덮어써서 생성함
+    # 좋은 코드스타일은 아님
+    ```
+
 85. 덕타이핑
+
+    덕타이핑이란? -> [https://wikidocs.net/16076](https://wikidocs.net/16076)
+
+    덕타이핑 구현 예시
+
+    ``` python
+    class Person(object):
+        def __init__(self, age=1):
+            self.age = age
+
+        def drive(self):
+            if self.age >= 18:
+                print('ok')
+            else:
+                raise Exception('No drive')
+
+    class Baby(Person):
+        def __init__(self, age=1):
+            if age < 18:
+                super().__init__(age)
+            else:
+                raise ValueError
+
+    class Adult(Person):
+        def __init__(self, age=18):
+            if age >= 18:
+                super().__init__(age)
+            else:
+                raise ValueError
+
+    class RideCar(object):
+
+        def ride(self, person):
+            person.drive()
+
+    baby = Baby()
+    adult = Adult()
+    car = RideCar()
+
+    # car.ride(baby)
+    car.ride(adult)
+    ```
+
 86. 추상 클래스
+
+    추상 클래스로 정의된 클래스로 상속받은 클래스는 반드시 추상 클래스를 포함해야 한다.
+
+    추상 클래스 정의 방법
+
+    ``` python
+    import abc  # 추상클래스 불러오기
+    class Person2(metaclass=abc.ABCMeta):  # 추상 클래스로 정의
+        
+        @abc.abstractmethod  # 추상 클래스로 정의
+        def drive(self):
+            pass
+    ```
+
 87. 다중계승
+
+    다중 계승은 두 가지 다 상속받는다. 단 오버라이드 경우 앞에서 부터 순서를 지킨다.
+
+    ``` python
+    class Person3(Person1, Person2):
+        # 생략
+        
+    # 오버라이드일 경우
+    # 순서 Person3 -> Person1 -> Person2 -> ... 상위 클래스 -> object
+    ```
+
 88. 클래스 변수
 89. 클래스 메소드와 스태틱 메소드
+
+    - 클래스 메소드를 만들면 오브젝트를 만들지 않아도 메소드 사용 가능, 현재 클래스의 속성을 불러옴
+    - 스태틱 메소드를 만들면 오브젝트틀 만들지 않아도 메소드 사용 가능, 단 상속시 클래스 메소드와 차이가 있음
+
+    [차이 보기 링크 https://medium.com/@hckcksrl/](https://medium.com/@hckcksrl/python-%EC%A0%95%EC%A0%81%EB%A9%94%EC%86%8C%EB%93%9C-staticmethod-%EC%99%80-classmethod-6721b0977372)
+
+    ``` python
+    class Person(object):
+
+        kind = 'human'  # 클래스 변수, 클래스로 만든 객체들이 공통으로 공유함
+
+        def __init__(self):
+            self.x = 100
+
+        def what_is_your_kind(self):
+            return self.kind
+
+        @classmethod  # 클래스 메소드
+        def what_is_your_kind2(cls):
+            return cls.kind
+
+        @staticmethod  # 스테틱 메소드
+        def about(year):
+            print(f'about human {year}')
+
+    a = Person()
+    print('a.kind:', a.kind)
+    print('a.kind_fun: ',a.what_is_your_kind())
+    b = Person  # 객체로 생성 x 클래스 자체로 생성
+    print('b.kind:',b.kind)
+    # print(b.what_is_your_kind())  # TypeError 발생
+    print('class_method: ', b.what_is_your_kind2())  
+    Person.about(1999)
+    ```
+
 90. 특수 메소드
+
+    특수 메소드(Special Method)란 파이썬에서 이미 정한 특별한 메소드  
+    예) ```__init__```  
+
+    ``` python
+    class Word(object):
+
+        def __init__(self, text):
+            self.text = text
+
+        def __str__(self):
+            return 'Word!!!'
+
+        def __len__(self):
+            return len(self.text)
+
+        def __add__(self, word):
+            return self.text.lower() + word.text.lower()
+
+        def __eq__(self, word):
+            return self.text.lower() == word.text.lower()
+
+    w = Word('test')
+    print(w)  # from __add__
+    print(len(w))  # from __len__
+
+    w2 = Word('####')
+    print(w + w2)  # from __add__
+
+    w3 = Word('test')
+    print(w == w3)  # from __eq__
+    ```
 
 ### Section 08: File I/O and System
 
@@ -939,6 +1135,51 @@ expected period: 5days
 ## Application
 
 ### Section 11: Config and Logging
+
+### Section 19: Graphic
+
+1. 어린이도 즐길 수 있는 그래픽 turtle
+2. turtle로 그림 그리기
+
+    [Turtle graphics Document](https://docs.python.org/3/library/turtle.html)
+
+    ``` python
+    from turtle import Screen, Turtle
+
+    screen = Screen()
+    turtle = Turtle()
+
+    turtle.color('red', 'yellow')
+    turtle.begin_fill()
+    turtle.shape('turtle')
+    speed = 1
+    while True:
+        speed += 0.5
+        turtle.speed(speed)
+        turtle.forward(200)
+        turtle.left(170)
+        if abs(turtle.pos()) < 1:
+            break
+    turtle.end_fill()
+
+    turtle.pencolor('white')
+    turtle.backward(200)
+    turtle.pencolor('blue')
+    turtle.color('green', 'blue')
+    for i in range(100):
+        turtle.fd(i * 2)
+        turtle.left(360 / 5 * 2)
+        turtle.speed(3+i)
+
+    screen.mainloop()
+    ```
+
+3. GUI 툴 킷 tkinter
+4. tkinter로 계산기 애플리케이션을 만들어보기
+5. 계산기 애플리케이션의 소스코드
+6. Mac 에서 애플리케이션 작성하기
+7. Windows 에서 인스톨러 작성하기
+8. kivy로 간단한 게임 애플리케이션 개발의 소개
 
 ### Section 20: Data Analysis
 
@@ -1005,7 +1246,6 @@ expected period: 5days
     ``` python
     df = DataFrame(np.random.randn(6, 4),
                    index=pd.date_range('20200628', periods=6))
-    df
     ```
 
 5. matplotlib
