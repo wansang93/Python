@@ -1100,18 +1100,337 @@ expected period: 5days
 ### Section 08: File I/O and System
 
 91. 파일의 작성
+
+    파일 작성 및 쓰기
+    ``` python
+    f = open(file_path, 'w')
+    f.write('wansang\n')
+    f.write('한글\n')
+    ```
+
+    프린트 문으로 파일에 쓰기
+    ``` python
+    print('한글 I want to write Korean!', file=f)
+    f.close()
+    ```
+
 92. with 구문으로 파일을 open 하기
+
+    ``` python
+    with open(file_path, 'w') as f:
+        f.write('Test\n')
+    ```
+
 93. 파일 읽어오기
+
+    한꺼번에 읽어오기
+    ``` python
+    with open(file_path, 'r') as f:
+        print(f.read())
+    ```
+
+    한줄씩 읽어오기
+    ``` python
+    with open(file_path, 'r') as f:
+        while True:
+            line = f.readline()
+            print(line, end='')
+            if not line:
+                break
+    ```
+
+    chuck 단위로 읽어오기  
+    (네트워크 프로그래밍때도 chuck 단위로 읽어오기 가능)
+    ``` python
+    with open(file_path, 'r') as f:
+        while True:
+            chuck = 2
+            line = f.readline(chuck)
+            print(line)
+            if not line:
+                break
+    ```
+
 94. seek를 써서 이동하기
+
+    - tell 메소드는 현재 커서의 위치를 알려줍니다.
+    - read 메소드는 현재 커서에서 몇글자를 읽어올지 알려줍니다.
+    - seek 메소드는 커서 위치를 해당 번호로 이동합니다.
+
+    tell, read, seek 예시
+
+    ``` python
+    with open(file_path, 'r') as f:
+        for i in range(20):
+            print(i, f.tell(), ':', f.read(1))
+        f.seek(5)
+        print(f.read(5))
+
+        # print(f.tell())  # 커서 어디?
+        # print(f.read(2))  # 커서로 부터 2개 읽기
+        # print(f.tell())
+        # f.seek(3)
+        # print(f.read(1))
+        # f.seek(4)  # 커서 5번째로 이동
+        # print(f.read(2))  # 커서 5번째 다음거 1개 읽기
+        # f.seek(15)
+        # print(f.read(1))
+    ```
+
 95. 쓰기와 읽어오기 모드
+
+    w+ 쓰고 보기, r+ 읽고 보기
+
+    ``` python
+    with open(file_path, 'w+') as f:
+        # f.read() !!!주의!!! -> 읽기 부터 하면 파일이 날라감 
+        f.write(s)
+        f.seek(0)  # 커서 위치 이동 0번째로
+        print(f.read())  # 읽기 가능
+    ```
+
 96. 템플릿
+
+    템플릿을 사용하면 원본 문서를 수정하지 않고 외부에서 접근하기 때문에 다양한 기능으로 씁니다.
+
+    ``` python
+    import string
+
+    s = """\
+    Hi $name.
+    $contents
+    Have a good day
+    """
+
+    with open(file_path, 'w+') as f:
+        f.write(s)
+        f.seek(0)
+        t = string.Template(f.read())
+
+    contents = t.substitute(name='Wansang', contents='How are you?')
+    print(contents)
+    ```
+
 97. CSV 파일에 쓰고 읽어오기
+
+    ``` python
+    import csv
+
+    # window 같은 경우 \r\n이 되서 2번 엔터효과 때문에 newline=''로 설정
+    with open(file_path, 'w', newline='') as csv_file:
+        field_name = ['Name', 'Count']
+        writer = csv.DictWriter(csv_file, fieldnames=field_name)
+        writer.writeheader()  # 파일 생성
+        writer.writerow({'Name': 'A', 'Count': 1})  # 줄 추가1
+        writer.writerow({'Name': 'B', 'Count': 2})  # 줄 추가2
+
+    with open(file_path, 'r') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row i n reader:
+            print(row['Name'], row['Count'])
+            # A 1
+            # B 2
+    ```
+
 98. 파일 조작
+
+    경로에 파일이 있는지 확인
+    ``` python
+    import os
+    print(os.path.exists(file_path + 'test.csv'))  # True
+    ```
+
+    경로가 폴더인지 확인
+    ``` python
+    print(os.path.isdir(file_path))  # True
+    ```
+
+    파일 이름 바꾸기
+    ``` python
+    os.rename(file_path + 'test.txt', file_path + 'renamed.txt')
+    ```
+
+    바로가기 만들기
+    ``` python
+    os.symlink(file_path + 'renamed.txt', file_path + 'symlink.txt')
+    ```
+
+    디렉토리 만들기(해당 이름의 디렉토리가 없을 때 가능)
+    ``` python
+    os.mkdir(file_path + 'test_dir')
+    ```
+
+    디렉토리 삭제하기(디렉토리 안 아무것도 없을 때 가능)
+    ``` python
+    os.rmdir(file_path + 'test_dir')
+    ```
+
+    현재 실행되는 디렉토리를 반환
+    ``` python
+    cwd = os.getcwd()  # current working directory
+    ```
+
+    파일 만들기
+    ``` python
+    import pathlib  # python -v >= 3.0
+    pathlib.Path(file_path + 'empty.txt').touch()
+    ```
+
+    해당 디렉토리의 하위 목록을 리스트로 반환
+    ``` python
+    import glob
+    print(glob.glob(cwd + '\\*'))
+    ```
+
+    파일 복사하기
+    ``` python
+    import shutil
+    shutil.copy('복사하고 싶은 파일', '복사한 파일 이름')
+    ```
+
+    해당 디렉토리 모두 삭제
+    ``` python
+    shutil.rmtree('삭제하고 싶은 디렉토리')
+    ```
+
 99. tarfile 의 압축 및 풀기
+
+    ``` python
+    import tarfile
+
+    # tarfile 로 압축하기
+    with tarfile.open(file_path + 'test.tar.gz', 'w:gz') as tr:
+        tr.add('test_dir')
+
+    # tarfile 로 압축풀기
+    with tarfile.open(file_path + 'test.tar.gz', 'r:gz') as tr:
+        # tr.extractall(path='test_tar')  # 압축 풀기
+        with tr.extractfile('test_dir/sub_dir/sub_text.txt') as f:  # 압축 풀고 읽어오기
+            print(f.read())
+    ```
+
 100. zipfile 의 압축 및 풀기
+
+    ``` python
+    import zipfile
+    import glob
+
+    with zipfile.ZipFile('test.zip', 'w') as z:
+        # z.write('test_dir')
+        # z.write('test_dir/empty.txt')
+        for f in glob.glob('test_dir/**', recursive=True):
+            print(f)
+            z.write(f)
+
+    with zipfile.ZipFile('test.zip', 'r') as z:
+        # 압축하기
+        # z.extractall('zip_file')
+        with z.open('test_dir/empty.txt') as f:
+            print(f.read())
+    ```
+
 101. tempfile
+
+    tempfile 라이브러리는 파일이나 폴더를 만들고 바로 지울 때 사용합니다.  
+    임시보관용이라고 생각하면 좋습니다.
+
+    ``` python
+    import tempfile
+
+    # 파일 만들기
+    with tempfile.TemporaryFile(mode='w+') as t:
+        t.write('hello')
+        t.seek(0)
+        print(t.read())
+
+    # 버퍼가 아닌 temp 폴더에 파일 만들기
+    with tempfile.NamedTemporaryFile(delete=False) as t:
+        print(t.name)
+        with open(t.name, 'w+') as f:
+            f.write('test\n')
+            print(f.read())
+
+    # temp 폴더에 폴더 만들기
+    with tempfile.TemporaryDirectory() as td:
+        print(td)
+
+    # 폴더 지우기 방지
+    temp_dir = tempfile.mkdtemp()
+    print(temp_dir)
+    ```
+
 102. subprocess 로 명령어 실행하기
+
+    subprocesss는 쉘 명령어를 파이썬에서도 쓸 수 있습니다.
+    ``` python
+    import os
+    import subprocess
+
+    # 옛날 방식
+    os.system('ls')
+
+    # 요즘 방식
+    subprocess.run(['ls', '-al'])
+
+    # 쉬운 방식
+    # 단점: 보안상 안전하지 않다. 명령어에 다 지우기 등을 추가할 수 있다.
+    print('=' * 10)
+    subprocess.run('ls -al | grep test', shell=True)
+
+    # 리턴 코드를 이용해서 exception 발생 가능, 또는 check 옵션으로 가능
+    r = subprocess.run('ls', shell=True, check=True)
+    print(r)
+
+    # 파이프를 써서 shell injection attack 을 피하는 방법
+    print('=' * 10, 'defense shell injection')
+    p1 = subprocess.Popen(['ls', '-al'], stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(
+        ['grep', 'test'], stdin=p1.stdout, stdout=subprocess.PIPE
+    )
+    p1.stdout.close()
+    output = p2.communicate()[0]
+    print(output)
+    ```
+
 103. datetime
+
+    datetime 패키지로는 시간을 편하게 쓸 수 있습니다.
+    ``` python
+    import datetime
+
+    now = datetime.datetime.now()
+    print(now)  # 2020-07-24 18:46:11.346924
+    print(now.strftime('%d/%m/%y - %H:%M:%S.%f'))
+
+    today = datetime.date.today()
+    print(today)  # 2020-07-24
+    print(today.isoformat())  # 2020-07-24
+    print(today.strftime('%d-%m-%y'))  # 24-07-20
+
+    t = datetime.time(hour=1, minute=30, second=30, microsecond=30)
+    print(t)
+
+    # timedelta 메서드를 활용하면 시간을 빼고 더할 수 있습니다.
+    datetime.timedelta(days=365)
+    datetime.timedelta(hours=3)
+    d = datetime.timedelta(minutes=5)
+    print(now - d)  # 5분 전
+    ```
+
+    시간 로그가 적힌 백업 파일에 만들기
+    ``` python
+    import os
+    import shutil
+
+    file_name = 'text.txt'
+
+    with open(file_name, 'w') as f:
+        f.write('test')
+
+    if os.path.exists(file_name):
+        # text.txt.2020_07_24_23_03_40 파일 생성
+        shutil.copy(file_name, "{}.{}".format(file_name, now.strftime('%Y_%m_%d_%H_%M_%S')))
+    ```
 
 ### Section 09: Ending the Introduction - Coding the Simple Application
 
