@@ -1309,7 +1309,7 @@ expected period: 5days
             print(f.read())
     ```
 
-100. zipfile 의 압축 및 풀기
+0. zipfile 의 압축 및 풀기
 
     ``` python
     import zipfile
@@ -1329,7 +1329,7 @@ expected period: 5days
             print(f.read())
     ```
 
-101. tempfile
+1. tempfile
 
     tempfile 라이브러리는 파일이나 폴더를 만들고 바로 지울 때 사용합니다.  
     임시보관용이라고 생각하면 좋습니다.
@@ -1359,7 +1359,7 @@ expected period: 5days
     print(temp_dir)
     ```
 
-102. subprocess 로 명령어 실행하기
+2. subprocess 로 명령어 실행하기
 
     subprocesss는 쉘 명령어를 파이썬에서도 쓸 수 있습니다.
     ``` python
@@ -1392,7 +1392,7 @@ expected period: 5days
     print(output)
     ```
 
-103. datetime
+3. datetime
 
     datetime 패키지로는 시간을 편하게 쓸 수 있습니다.
     ``` python
@@ -1434,22 +1434,49 @@ expected period: 5days
 
 ### Section 09: Ending the Introduction - Coding the Simple Application
 
-104. Windows 와 Mac의 명령어
-105. 간단한 애플리케이션을 만들어 봅시다.
-106. 데모 애플리케이션의 흐름을 설명한 pdf 파일
-107. 데모 애플리케이션 압축 풀기
-108. 샘플 데모 애플리케이션 코드
-109. 샘플 코드의 설계와 폴더 구조의 해설
-110. 샘플 코드의 Views 와 템플릿의 해설
-111. 샘플 코드의 models 와 controller 의 해설
+4. Windows 와 Mac의 명령어
+
+- where: 검색하고싶은 명령어를 지정
+- cls: 표시를 클리어
+- dir: 파일이나 디렉토리 정보를 표시
+- cd: 디렉토리 간 이동
+- md: 디렉토리 작성
+- type: 텍스트 파일의 내용을 표시
+- move: 디렉토리를 이동 
+- xcopy /e /c /h: 디렉토리를 복사
+- rd: 디렉토리를 삭제 
+- move: 파일을 이동
+- copy: 파일을 복사
+- del: 파일을 삭제
+- dir 또는 cd: 현재 디렉토리의 장소를 확인
+
+5. 간단한 애플리케이션을 만들어 봅시다.
+6. 데모 애플리케이션의 흐름을 설명한 pdf 파일
+7. 데모 애플리케이션 압축 풀기
+
+    ```window``` + ```R``` -> ```cmd`` -> 
+
+8. 샘플 데모 애플리케이션 코드
+9. 샘플 코드의 설계와 폴더 구조의 해설
+
+    MVC(Model–View–Controller) 모델
+
+    - Model: 무엇을 할지 정의(알고리즘, DB의 CRUD등)
+    - View: 무엇을 보여줄지 정의(UI화면 등)
+    - Controller: 어떻게 처리할지 정의(요청을 분석하여 Model과 View 업데이트 요청 등)
+    
+    ![mvc_role_diagram](./09.%20Coding%20the%20Simple%20Application/image/mvc_role_diagram.png)
+
+10. 샘플 코드의 Views 와 템플릿의 해설
+11. 샘플 코드의 models 와 controller 의 해설
 
 ### Section 10: Code Style
 
-112. 코드 스타일을 체크하는 툴의 확인
-113. 스타일 룰
-114. Python 쓰는 방법
-115. 도큐먼트와 Pylint
-116. 문장처럼 Python 적기
+12. 코드 스타일을 체크하는 툴의 확인
+13. 스타일 룰
+14. Python 쓰는 방법
+15. 도큐먼트와 Pylint
+16. 문장처럼 Python 적기
 
 ## Application
 
