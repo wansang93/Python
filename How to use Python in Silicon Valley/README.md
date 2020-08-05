@@ -1464,7 +1464,7 @@ expected period: 5days
 
     setup.py 파일이 있는지 확인 후 있다면 한번 읽어보고 설정하기
 
-    ```python setup.py develop``` 해당 콘솔 창에 입력하면 setup.py의 셋팅을 해줌
+    ```python setup.py develop``` 해당 콘솔 창에 입력하면 setup.py의 셋팅을 해줍니다.
 
     ``` python
     # 저번시간에는 distutils.core로 셋팅을 했다면 이번에는
@@ -1598,10 +1598,144 @@ expected period: 5days
 ### Section 10: Code Style
 
 12. 코드 스타일을 체크하는 툴의 확인
+
+    파이썬 코드를 체크해주는 툴들
+
+    pip install pep8
+    pip install flake8
+    pip install pylint
+
 13. 스타일 룰
+
+    PEP8 Style Guide for Python Code [https://www.python.org/dev/peps/pep-0008/](https://www.python.org/dev/peps/pep-0008/)
+
 14. Python 쓰는 방법
+
+    ``` python
+    # 1. 함수를 import 하지말고 모듈을 import 합니다.
+    # 2. 표준라이브러리, third-party 패키지, local 패키지, 나의 패키지 순으로 적습니다.
+    # 3. try, except에 Exception을 적는 것은 좋지 않습니다.
+    # Exception은 포괄적 개념이기 때문에 코드 해석이 어려울 수 있습니다.
+    def main():
+        try:
+            pass
+        except Exception:
+            pass
+    # 4. 자신의 class를 만들어서 Exception을 상속받아 예외처리를 하면 좋습니다.
+    class MainError(Exception):
+        pass
+
+    def main2():
+        raise MainError('Main error')
+
+    # 5. 컴프리핸션이 길어지면 코드 해석이 어려움으로 피해야 합니다.
+    k = [(i, x, y) for i in [1, 2, 3] for x in [1, 2, 3] for y in [1, 2, 3]]
+
+
+    d = {'key1': 'value1', 'key2': 'value2'}
+
+    # 6. 불필요한 함수 호출을 하지 않습니다.
+    for key in d:  # d.keys() 로 적지 않기
+        print(key)
+
+    # 7. key, value 처럼 변수는 확실하게 적어주면 좋습니다.
+    for key, value in d.items():
+        pass
+
+    # 8. 제너레이터는 yield 를 사용하면 속도가 빨라집니다.
+    def t():
+        # num = []
+        for i in range(10):
+            yield i
+            # num.append(i)
+        # return num
+
+    for i in t():
+        print(i)
+
+    # 9. 간단한 함수는 lambda로 적으면 좋습니다.
+    def other_func(f):
+        print(f(10))
+
+    def test_func(x):
+        return x * 2
+
+    other_func(test_func)
+    other_func(lambda x: x * 4)
+
+    # 10. 한줄로 작성은 기업마다 다릅니다.
+    y = None
+    x = True if y else False
+    print(x)
+
+    # 11. 리스트의 default 인수로 빈 리스트를 사용하지 않습니다.
+    # 다음과 같은 방법으로 작성합니다.
+    def my_function(not_list=None):
+        if not_list is None:
+            not_list = []
+        
+        # 빈 리스트는 not을 써서 판단할 수 있습니다.
+        elif not not_list:
+            return None
+
+    # 12. 클로저의 장점은 글로벌 변수를 은폐하여 다른사람이 고칠 수 없게 합니다.
+    # 클로저를 안 쓴 경우(더하기 함수의 예)
+    i = 1
+    def add_num():
+        def plus(x):
+            return i + x
+        return plus
+
+    f = add_num()
+    print(f(10))
+    i = 20  # i 값을 누군가가 바꾸면 값이 변경됩니다.
+    print(f(10))
+
+    # 클로저를 쓴 경우
+    def closure(i):
+        def plus(x):
+            return i + x
+        return plus
+
+    f2 = closure(1)
+    print(f2(10))
+
+    # 13. 데코레이터 방식들
+    def _deco_func(func):
+        def wrapper(func):
+            pass
+        return wrapper
+
+    # 요즘방식
+    @_deco_func
+    def fff():
+        pass
+
+    # 옛날 방식
+    fff = _deco_func(fff)
+    ```
+
 15. 도큐먼트와 Pylint
+
+    - 도큐먼트는 영어로 작성하면 많은 사람들이 알아들을 수 있습니다.
+    - 도큐먼트는 큰따음표(""")로 작성합니다. (''' (x))
+    - 함수나 메소드 마다 설명을 적어두면 좋습니다. 너무 간단하면 안적어도 됩니다.
+      - Args: 자료형과 설명
+      - Returns: 자료형과 설명
+    - TODO 작성법은 ()에 자신의 아이디나 이메일을 작성하여 누구나 소통할 수 있게 합니다.
+      - \# TODO (wansang93@naver.com) 내용 
+
 16. 문장처럼 Python 적기
+
+    가장 깔끔하고 읽기 쉬운 코드란, 완벽한 도큐먼트 없이 Python 의 코드를 읽는 것만으로도 어떤 것이 쓰여져 있는지 알 수 있는 코드 입니다.
+
+    Python 의 코드 자체가 설계서의 도큐먼트라고 할수 있는 만큼 Python 의 코드를 읽는 것만으로도 다른 사람이 이해할 수 있는 프로그램을 작성해 주시기 바랍니다.
+
+    영어도 우리말도 언어지만 Python 도 언어입니다. 작문을 하는 것 처럼, Python 의 코드 자체도 다른 사람이 읽는 문장 처럼 알기 쉽게 씁시다.
+
+    미국 실리콘밸리에서는 agile 개발이 주류이기 때문에 그다지 설계서나 도큐먼트에 시간을 들이지 않고 개발을 시작하는 케이스가 많습니다. Google 등에서도 3 페이지 정도만의 간단한 설계서로 코드를 쓰기 시작한다고 하지만 코드 자체가 깔끔하게 쓰여있기 때문에 도큐먼트 없이 코드를 훑어보는 것 만으로도 무엇을 개발하는지 알수 있다고 합니다.
+
+    Python 의 띄워쓰기 (인덴트) 를 제차 강조하는 것도 깔끔한 코드를 쓰셨으면 하는 바램이니까 여러가지 코드 스타일을 마스터 하셔서 꼭 pythonic 한 프로그래머가 되시기 바랍니다!
 
 ## Application
 
