@@ -69,29 +69,29 @@ expected period: 5days
     문자열이 긴경우
     
     1. \(back slash)를 사용
-    ``` python
-    # 이 경우 첫 줄과 마지막 줄이 항상 \n 이 들어감
-    ''' 
-    line1
-    line2
-    line3
-    '''
-    ```
-    ``` python
-    # 따라서 \를 써주면 \는 \n을 없에 줄 수 있음
-    '''\
-    line1
-    line2
-    line3\
-    '''
-    ```
+        ``` python
+        # 이 경우 첫 줄과 마지막 줄이 항상 \n 이 들어감
+        ''' 
+        line1
+        line2
+        line3
+        '''
+        ```
+        ``` python
+        # 따라서 \를 써주면 \는 \n을 없에 줄 수 있음
+        '''\
+        line1
+        line2
+        line3\
+        '''
+        ```
     2. 문자열 2개를 따로 적어 소괄호로 합치기도 함(unpacking의 원리)
 
-    ``` python
-    # 한줄로 처리됨
-    s = ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    ```
+        ``` python
+        # 한줄로 처리됨
+        s = ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+        ```
 
 12. 문자열 인덱스와 슬라이스
 
@@ -809,7 +809,7 @@ expected period: 5days
 
 77. \_\_name\_\_ 과 \_\_main\_\_
 
-    실행한 스크립트의 \_\_name\_\_은 \_\main\_\_\으로 실행되고
+    실행한 스크립트의 \_\_name\_\_은 \_\_main\_\_으로 실행되고  
     다른 스크립트의 \_\_name\_\_은 다른 스크립트 이름으로 실행됨
 
     스크립트는 다음과 같이 만드는 것이 좋음
@@ -1436,28 +1436,64 @@ expected period: 5days
 
 4. Windows 와 Mac의 명령어
 
-- where: 검색하고싶은 명령어를 지정
-- cls: 표시를 클리어
-- dir: 파일이나 디렉토리 정보를 표시
-- cd: 디렉토리 간 이동
-- md: 디렉토리 작성
-- type: 텍스트 파일의 내용을 표시
-- move: 디렉토리를 이동 
-- xcopy /e /c /h: 디렉토리를 복사
-- rd: 디렉토리를 삭제 
-- move: 파일을 이동
-- copy: 파일을 복사
-- del: 파일을 삭제
-- dir 또는 cd: 현재 디렉토리의 장소를 확인
+    - where: 검색하고싶은 명령어를 지정
+    - cls: 표시를 클리어
+    - dir: 파일이나 디렉토리 정보를 표시
+    - cd: 디렉토리 간 이동
+    - md: 디렉토리 작성
+    - type: 텍스트 파일의 내용을 표시
+    - move: 디렉토리를 이동 
+    - xcopy /e /c /h: 디렉토리를 복사
+    - rd: 디렉토리를 삭제 
+    - move: 파일을 이동
+    - copy: 파일을 복사
+    - del: 파일을 삭제
+    - dir 또는 cd: 현재 디렉토리의 장소를 확인
 
 5. 간단한 애플리케이션을 만들어 봅시다.
 6. 데모 애플리케이션의 흐름을 설명한 pdf 파일
 7. 데모 애플리케이션 압축 풀기
 
-    ```window``` + ```R``` -> ```cmd`` -> 
+    zip 파일의 경우
+    
+    ```window``` + ```R``` -> ```cmd``` -> ```tar -xf <file_name>.zip```
 
 8. 샘플 데모 애플리케이션 코드
-9. 샘플 코드의 설계와 폴더 구조의 해설
+
+    데모 애플리케이션 다운로드 후 setup.py 설정하는 방법
+
+    setup.py 파일이 있는지 확인 후 있다면 한번 읽어보고 설정하기
+
+    ```python setup.py develop``` 해당 콘솔 창에 입력하면 setup.py의 셋팅을 해줌
+
+    ``` python
+    # 저번시간에는 distutils.core로 셋팅을 했다면 이번에는
+    # setuptools에 setup으로 셋팅을 합니다. setuptools를 더 많이 씁니다.
+    try:
+        from setuptools import setup, find_packages
+    except ImportError:
+        from distutils.core import setup
+
+    setup(
+        name='python_programming_demo_app',
+        version='0.0.1',
+        packages=['roboter', 'roboter.models', 'roboter.controller', 'roboter.views'],
+        # You could use find_packages if setuptools is installed. 
+        ### find_packages()를 사용하면 패키지를 자동으로 찾아서 다운로드 해줍니다.###
+        # packages=find_packages(),
+        package_data={ 'roboter': ['templates/*.txt'] },
+        url='http://sakaijunsoccer.appspot.com',
+        license='MIT',
+        author='jsakai',
+        author_email='example@example.com',
+        # You can specify install_requires if setuptools is installed
+        ### install_requires 안에 있는 패키지를 자동으로 찾아서 다운로드 해줍니다.###
+        # install_requires=['termcolor==1.1.0'],
+        long_description=open('README.txt').read(),
+    )
+    ```
+
+9.  샘플 코드의 설계와 폴더 구조의 해설
 
     MVC(Model–View–Controller) 모델
 
@@ -1468,7 +1504,96 @@ expected period: 5days
     ![mvc_role_diagram](./09.%20Coding%20the%20Simple%20Application/image/mvc_role_diagram.png)
 
 10. 샘플 코드의 Views 와 템플릿의 해설
+
+    ``` python
+    """Utils to display to be returned to the user on the console."""
+    import os
+    import string
+
+    import termcolor
+
+    # template 주소 찾기
+    def get_template_dir_path():
+        """Return the path of the template's directory.
+
+        Returns:
+            str: The template dir path.
+        """
+        template_dir_path = None
+        try:
+            import settings
+            if settings.TEMPLATE_PATH:
+                template_dir_path = settings.TEMPLATE_PATH
+        except ImportError:
+            pass
+
+        if not template_dir_path:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            template_dir_path = os.path.join(base_dir, 'templates')
+
+        return template_dir_path
+
+
+    class NoTemplateError(Exception):
+        """No Template Error"""
+
+    # template 주소에서 원하는 파일이름 찾기
+    def find_template(temp_file):
+        """Find for template file in the given location.
+
+        Returns:
+            str: The template file path
+
+        Raises:
+            NoTemplateError: If the file does not exists.
+        """
+        template_dir_path = get_template_dir_path()
+        temp_file_path = os.path.join(template_dir_path, temp_file)
+        if not os.path.exists(temp_file_path):
+            raise NoTemplateError('Could not find {}'.format(temp_file))
+        return temp_file_path
+
+    # 원하는 파일 템플릿 가져와서 보여주기
+    def get_template(template_file_path, color=None):
+        """Return the path of the template.
+
+        Args:
+            template_file_path (str): The template file path
+            color: (str): Color formatting for output in terminal
+                See in more details: https://pypi.python.org/pypi/termcolor
+
+        Returns:
+            string.Template: Return templates with characters in templates.
+        """
+        template = find_template(template_file_path)
+        with open(template, 'r', encoding='utf-8') as template_file:
+            contents = template_file.read()
+            contents = contents.rstrip(os.linesep)
+            contents = '{splitter}{sep}{contents}{sep}{splitter}{sep}'.format(
+                contents=contents, splitter="=" * 60, sep=os.linesep)
+            contents = termcolor.colored(contents, color)
+            return string.Template(contents)
+    ```
+
 11. 샘플 코드의 models 와 controller 의 해설
+
+    controller를 보면 흐름과 제어방법을 알 수 있습니다.
+
+    ``` python
+    """Controller for speaking with robot"""
+    from roboter.models import robot
+
+
+    def talk_about_restaurant():
+        """Function to speak with robot"""
+        restaurant_robot = robot.RestaurantRobot()
+        restaurant_robot.hello()
+        restaurant_robot.recommend_restaurant()
+        restaurant_robot.ask_user_favorite()
+        restaurant_robot.thank_you()
+    ```
+
+    model을 보면 데이터 구조와 DB 등을 볼 수 있습니다.
 
 ### Section 10: Code Style
 
@@ -1620,7 +1745,7 @@ expected period: 5days
 
 8. 데이터 해석 섹션의 소스코드
 
-    [소스 코드](./20%20Data%20Analysis/teacher's%20data_analyst/)
+    [소스 코드](./20.%20Data%20Analysis/Data%20Analysis/)
 
 ### Section 23: Final Message
 
