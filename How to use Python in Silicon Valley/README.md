@@ -1741,10 +1741,160 @@ expected period: 5days
 
 ### Section 11: Config and Logging
 
+
+### Section 16: Encryption
+
+6. 문자 코드
+
+    - 참고 문서
+      - [한글 인코딩 이야기](https://heyjimin.tistory.com/14)
+      - [문자열 인코딩 개념 정리](https://onlywis.tistory.com/2)
+      - [한글 인코딩의 이해 1편](https://d2.naver.com/helloworld/19187)
+      - [한글 인코딩의 이해 2편](https://d2.naver.com/helloworld/76650)
+      - [유니코드란? UTF-8, EUC-KR 비교](https://dowhathewanna.tistory.com/2)
+
+    - ASCII(American Standard Code for Information Interchange)
+      - 구성: 7bits
+      - 특징: 영어, 숫자, 특수문자, 기호를 위한 문자 코드
+      - 문제점: 128개 밖에 못쓰다보니 영어를 제외한 문자 표시에 제한사항 발생
+    - ANSI Code(American National Standard Institute Code)
+      - 구성: 8bits(ASCII(7bits) + CodePage(1bit))
+      - 특징: ASCII의 문제점을 개선 확장판으로 CodePage가 추가됨으로 글자 128개 추가 사용 가능
+      - 개선: 128개의 문자가 추가되다 보니 독일, 프랑스 등 라틴개열 글자 추가 가능
+      - 문제점: 128개로는 한글, 한자, 가나(일본 글자)를 표시하기에 턱없이 부족
+    - EUC-KR(Extended Unix Code - Korea)
+      - 구성: 1byte or 2bytes(2,350자의 한글)
+      - 특징: 한글 지원을 위해 Unix 계열에서 나온 완성형 코드 조합
+      - KS X 1001과 KS X 1003 표준안의 인코딩 방식
+      - 문제점: 여전히 적은 한글 갯수, 특정 한글 글자 입력 불가
+    - CP949(Code Page 949)
+      - 구성: 1byte or 2bytes(11,172자의 한글)
+      - 특징: 한글 지원을 위해 Windows 계열에 나온 완성형 코드 조합
+      - 949의 의미는 코드페이지가 949이며 중국어 간체자는 936, 일본어는 932 
+      - MS949(MicroSoft)라고도 불리며 EUC-KR을 확장하여 MS에서 만든 한글 코드
+      - 엄연히 CP949와 MS949는 다르지만 대부분 같은 의미로 말함
+        - 예) JAVA에서는 CP949는 MS가 아닌 IBM에서 처음 지정한 코드 페이지가 기준
+      - EUC-KR와 다른 인코딩이지만 EUC-KR을 확장하였기 때문에 혼동이 올 수 있음
+        - 예) JAVA에서는 CP949와 EUC-KR이 사실상 같으며, MS949로 지정해야 함
+    - UNICODE(Unique Universal and Uniform character enCoding)
+      - 특징: 전 세계 모든 문자와 컴퓨터에서 일관되게 표현할 수 있도록 고안된 코드 조합
+      - UNICODE는 인코딩이 아니며 모든 문자를 2bytes 숫자로 1:1 매핑시키는 방식임
+    - UTF-8
+      - 구성: 1 ~ 4bytes(최대 1,112,064자 표현 가능)
+      - UNICODE를 위한 가변 길이 문자 인코딩 방식 중 하나
+
+7. pycrypto의 암호화와 해독
+
+    AES 과정 -> [https://www.youtube.com/watch?v=mlzxpkdXP58](https://www.youtube.com/watch?v=mlzxpkdXP58)
+
+    AES의 CBC 방법으로 암호화 하기
+
+    1. pip install pycryptodome 설치
+    2. 키와 iv 생성
+    3. 패딩 작업
+    4. 암호문으로 생성
+
+    ``` python
+    import string
+    import random
+
+    from Crypto.Cipher import AES
+
+    # 킷값 생성
+    key = ''.join(
+        random.choice(string.ascii_letters) for i in range(AES.block_size)).encode("utf8")
+
+    # iv값 생성
+    iv = ''.join(
+        random.choice(string.ascii_letters) for i in range(AES.block_size)).encode("utf8")
+
+    file_path = r'C:\Users\wansang\Desktop\Gitrep\Python\How to use Python in Silicon Valley\16. Encryption'
+
+    with open(file_path + r'\plaintext.txt', 'r') as f, open(file_path + r'\enc.dat', 'wb') as e:
+        # 파일 읽어오기
+        plaintext = f.read()
+
+        # 패딩하기
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        padding_length = AES.block_size - len(plaintext) % AES.block_size
+        plaintext += chr(padding_length) * padding_length
+        plaintext = plaintext.encode("utf-8")
+        
+        # 암호화
+        cipher_text = cipher.encrypt(plaintext)
+        print(cipher_text)
+        e.write(cipher_text)
+
+    with open(file_path + r'\enc.dat', 'rb') as f:
+        cipher2 = AES.new(key, AES.MODE_CBC, iv)
+        ciphertext = f.read()
+        decrypted_text = cipher2.decrypt(ciphertext)
+        print(decrypted_text[:-decrypted_text[-1]])
+    ```
+
+8. hashlib의 해쉬
+
+    - 비밀번호를 hash로 통해 db에 저장하기
+      - sha256으로 hash값 생성
+      - salt값을 해쉬값에 더함
+      - stretch 방법으로 해쉿값으로 해쉿값을 반복 생성
+      - 그 값을 비밀번호 최종값으로 저장
+
+    ``` python
+    import base64
+    import os
+    import hashlib
+
+    print(hashlib.sha256(b'password').hexdigest())
+    print(hashlib.sha256(b'password').hexdigest())
+
+    user_name = 'wansang93'
+    user_pass = 'password'
+
+    db = {}
+
+    salt = base64.b64encode(os.urandom(32))
+    print(salt)
+
+    # digest 만들기(암호화 작업)
+    def get_digest(password):
+        password = bytes(user_pass, 'utf-8')
+        print(password)
+        # salt 기법
+        digest = hashlib.sha256(salt + password).hexdigest()
+        # stretch 기법
+        for _ in range(10000):
+            digest = hashlib.sha256(bytes(digest, 'utf-8')).hexdigest()
+        return digest
+
+    db[user_name] = get_digest(user_pass)
+
+    print(db)
+
+    def is_login(user_name, password):
+        return get_digest(password) == db[user_name]
+
+    print(is_login(user_name, user_pass))
+
+
+    # 위에 함수를 한번에 하기
+    digest = hashlib.pbkdf2_hmac(
+        'sha256', bytes(user_pass, 'utf-8'), salt, 10000)
+
+    db[user_name] = digest
+
+    def is_login2(user_name, password):
+        digest = hashlib.pbkdf2_hmac(
+        'sha256', bytes(user_pass, 'utf-8'), salt, 10000)
+        return digest == db[user_name]
+
+    print(is_login2(user_name, user_pass))
+    ```
+
 ### Section 19: Graphic
 
-1. 어린이도 즐길 수 있는 그래픽 turtle
-2. turtle로 그림 그리기
+44. 어린이도 즐길 수 있는 그래픽 turtle
+45. turtle로 그림 그리기
 
     [Turtle graphics Document](https://docs.python.org/3/library/turtle.html)
 
@@ -1779,23 +1929,23 @@ expected period: 5days
     screen.mainloop()
     ```
 
-3. GUI 툴 킷 tkinter
-4. tkinter로 계산기 애플리케이션을 만들어보기
-5. 계산기 애플리케이션의 소스코드
-6. Mac 에서 애플리케이션 작성하기
-7. Windows 에서 인스톨러 작성하기
-8. kivy로 간단한 게임 애플리케이션 개발의 소개
+46. GUI 툴 킷 tkinter
+47. tkinter로 계산기 애플리케이션을 만들어보기
+48. 계산기 애플리케이션의 소스코드
+49. Mac 에서 애플리케이션 작성하기
+50. Windows 에서 인스톨러 작성하기
+51. kivy로 간단한 게임 애플리케이션 개발의 소개
 
 ### Section 20: Data Analysis
 
-1. 데이터 해석의 개념
+52. 데이터 해석의 개념
 
     ![데이터 해석 개념](./20.%20Data%20Analysis/Data%20Analysis/concept.png)
 
     데이터 웨어하우스: 데이터베이스와 비슷한 개념, 사람에 따라 같은 개념으로 보기도 함  
     데이터만 보존하는 곳 or 데이터 보존 및 데이터베이스 기능 추가
 
-2. Jupyter Notebook
+53. Jupyter Notebook
 
     help 함수 대신에 ? 로 부를수도 있다.  
     ?? 두개를 쓰면 함수 정보를 볼 수 있다.
@@ -1805,7 +1955,7 @@ expected period: 5days
     os.path.join??
     ```
 
-3. numpy
+54. numpy
 
     ``` python
     # 0 부터 100까지 10개를 균일하게 나눠서 배열 만들기
@@ -1846,17 +1996,17 @@ expected period: 5days
     plt.show()
     ```
 
-4. pandas
+55. pandas
 
     ``` python
     df = DataFrame(np.random.randn(6, 4),
                    index=pd.date_range('20200628', periods=6))
     ```
 
-5. matplotlib
+56. matplotlib
 
 
-6. scikit-learn
+57. scikit-learn
 
     1. 데이터를 우선 가저온다.
     2. 데이터를 교차 검증 부분에서 훈련용, 테스트용으로 나눈다.
@@ -1865,7 +2015,7 @@ expected period: 5days
     5. 검증을 한다.
     6. 예측을 한다.
 
-7. 주가의 데이터 해석과 예측
+58. 주가의 데이터 해석과 예측
 
     1. 설계
     2. 데이터 웨어하우스 구축: 구축 후 데이터 확인
@@ -1877,7 +2027,7 @@ expected period: 5days
     
     [딥러닝 텐서플로 튜토리얼 링크](https://www.tensorflow.org/tutorials/deep_cnn)
 
-8. 데이터 해석 섹션의 소스코드
+59. 데이터 해석 섹션의 소스코드
 
     [소스 코드](./20.%20Data%20Analysis/Data%20Analysis/)
 
