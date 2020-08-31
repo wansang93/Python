@@ -6,8 +6,6 @@ Lecture Link -> [https://www.udemy.com/share/102aRUCEIacV5QTHQ=/](https://www.ud
 
 start at 09 June, 2020
 
-expected period: 5days
-
 ## Introduction
 
 ### Section 01: Start here
@@ -1741,6 +1739,13 @@ expected period: 5days
 
 ### Section 11: Config and Logging
 
+### Section 12: Database
+
+### Section 13: Web and Network
+
+### Section 14: Test
+
+### Section 15: Parallel system
 
 ### Section 16: Encryption
 
@@ -1891,6 +1896,10 @@ expected period: 5days
     print(is_login2(user_name, user_pass))
     ```
 
+### Section 17: Automate infrastructure deployment
+
+### Section 18: Libraries, Tools and Tips
+
 ### Section 19: Graphic
 
 44. 어린이도 즐길 수 있는 그래픽 turtle
@@ -1930,11 +1939,48 @@ expected period: 5days
     ```
 
 46. GUI 툴 킷 tkinter
+
+    tkinter를 사용할 때 참고하면 좋은 문서
+
+    tkinter docs eng-> [https://docs.python.org/3/library/tkinter.html](https://docs.python.org/3/library/tkinter.html)
+    tkinter 문서 한글-> [https://docs.python.org/ko/3/library/tkinter.html](https://docs.python.org/ko/3/library/tkinter.html)
+
 47. tkinter로 계산기 애플리케이션을 만들어보기
+
+    [내가 만든 소스 코드](./19.%20Graphic/calculator.py)
+
 48. 계산기 애플리케이션의 소스코드
+
+    [선생님 소스 코드](./19.%20Graphic/calculator)
+
 49. Mac 에서 애플리케이션 작성하기
+
+    py2app 설명 -> [https://py2app.readthedocs.io/en/latest](https://py2app.readthedocs.io/en/latest)
+
+    py2app으로 애플리케이션 작성하기
+
+       1. 터미널에서 ```virtualenv myapp``` 으로 가상환경 설정
+       2. ```source myapp/bin/activate``` 로 가상환경 실행
+       3. ```pip install py2app``` 을 실행하여 py2app을 다운로드
+       4. ```python setup.py py2app``` 을 실행하면 애플리케이션 완성
+
 50. Windows 에서 인스톨러 작성하기
+
+    cx_Freeze 설명 -> [https://cx-freeze.readthedocs.io/en/latest/distutils.html](https://cx-freeze.readthedocs.io/en/latest/distutils.html)
+
+    cx_Freeze로 애플리케이션 작성하기
+
+    1. terminal에서 ```pip install cx_Freeze```을 실행
+    2. setup.py 파일에 들어가 TCL_LIBRARY 경로와 TK_LIBRARY 경로를 적음
+    3. MS의 installer의 룰에 따라서 setup.py를 작성했음
+    4. ```python setup.py build```로 실행
+    5. ```python setup.py bdist_msi```로 실행하면 애플리케이션 완성
+
 51. kivy로 간단한 게임 애플리케이션 개발의 소개
+
+    Python GUI Progarmming list -> [https://wiki.python.org/moin/GuiProgramming](https://wiki.python.org/moin/GuiProgramming)
+
+    Kivy doc -> [https://kivy.org/doc/stable/gettingstarted/intro.html](https://kivy.org/doc/stable/gettingstarted/intro.html)
 
 ### Section 20: Data Analysis
 
@@ -2030,6 +2076,10 @@ expected period: 5days
 59. 데이터 해석 섹션의 소스코드
 
     [소스 코드](./20.%20Data%20Analysis/Data%20Analysis/)
+
+### Section 21: Queuing system
+
+### Section 22: Async/await asyncio
 
 ### Section 23: Final Message
 
