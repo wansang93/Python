@@ -1,5 +1,6 @@
 .idea
 .vscode
+bash.exe.stackdump
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,pycharm,venv,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,pycharm,venv,jupyternotebooks

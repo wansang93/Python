@@ -1900,6 +1900,219 @@ start at 09 June, 2020
 
 ### Section 18: Libraries, Tools and Tips
 
+19. IPython
+
+    Ipython docu -> [https://ipython.readthedocs.io/en/stable/](https://ipython.readthedocs.io/en/stable/)
+
+    Ipython 설치: ```pip install ipython```
+
+    Ipython의 특징과 기능들
+      - Python Console 보다 편리함
+      - ```%``` 는 magic command 라고 불리며 여러 기능을 쓸 수 있음
+      - ```%quickref``` 로 기능을 볼 수 있음
+      - ```%save [file_name] 1-9``` -> 1~9번 라인을 file_name 으로 저장
+      - ```?``` 기능을 써서 편리하게 documents를 볼 수 있음
+
+20. contextlib.contextmanager
+
+    decorator의 가독성을 contextlib로 해결
+
+    ``` python
+    import contextlib
+
+    @contextlib.contextmanager
+    def tag(name):
+        print(f'<{name}>')
+        yield
+        print(f'</{name}>')
+
+    def f():
+        print('test0')
+        with tag('h2'):
+            print('test')
+            with tag('h5'):
+                print('test2')
+                
+        with tag('h5'):
+            print('test2')
+    ```
+
+21. contextlib.ContextDecorator
+
+    ``` python
+    import contextlib
+
+    class tag(contextlib.ContextDecorator):
+        def __init__(self, name):
+            self.name = name
+            self.start_tag = f'<{name}>'
+            self.end_tag = f'</{name}>'
+
+        def __enter__(self):
+            print(self.start_tag)
+            # contextlib decorator에서 함수들을 실행 할 수 있음
+            # print(self.start_tag + self.end_tag)
+        
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            print(exc_type)
+            print(exc_val)
+            print(exc_tb)
+            print(self.end_tag)
+
+    with tag('h5'):
+        print('test')
+        # Exception에서 에러 캐치 후 에러 발생 핸들링 가능
+        raise Exception('error')
+    ```
+
+22. contextlib.suppress
+
+    contextlib.suppress를 사용하면 깔끔하고 코드의 수를 줄일 수 있음  
+    (에러 발생 시 코드 줄이 4줄임)
+
+    suppress 는 억압하다의 의미로 억압해서 에러가 실행되지 않으면  
+    with문 아래를 실행한다라는 느낌
+
+    ``` python
+    import contextlib
+    import os
+
+    print(os.getcwd())
+
+    # 평소에 쓰는 방식
+    try:
+        os.remove('somefile.tmp')
+    except FileNotFoundError:
+        pass
+
+    # suppress 사용 방식
+    with contextlib.suppress(FileNotFoundError):
+        os.remove('somefile.tmp')
+    ```
+
+23. contextlib.redirect_stdout 과 contextlib.redirect_sterr
+
+    stdin, stdout, stderr 개념
+
+    ![stdin,stdout,stderr.png](./18.%20Libraries%20Tools%20and%20Tips/stdin,stdout,stderr.png)
+    
+    redirect_stdout을 이용해서 콘솔창에 적어지는 문장을 파일로 만들기
+
+    ``` python
+    import contextlib
+
+    file_path = (r'C:/Users/wansang/Desktop/Gitrep/Python/How '
+        r'to use Python in Silicon Valley/18. Libraries Tools and Tips')
+
+    with open(file_path + '/stdout.log', 'w') as f:
+        with contextlib.redirect_stdout(f):
+            # print('hello')
+            help(sys.stdout)
+    ```
+
+    에러 메세지를 log에 적어 파일화 하기
+    
+    ``` python
+    import contextlib
+    import logging
+    import sys
+
+    # # 참고: logging.error 와 sys.stderr.write
+    # logging.error('Error!')
+    # sys.stderr.write('Error!')
+
+    # Error logging은 항상 stderr를 쓰게 돼 있지만
+    # stdout을 통해서 파일에 적을 수 있음
+    # 특히 contextlib.redirect_stdout을 통해 logging하면 편함
+
+    file_path = (r'C:/Users/wansang/Desktop/Gitrep/Python/How '
+        r'to use Python in Silicon Valley/18. Libraries Tools and Tips')
+
+    with open(file_path + '/stderr.log', 'w') as ff:
+        with contextlib.redirect_stderr(ff):
+        logging.error('Error!')
+    ```
+
+24. contextlib.ExitStack
+
+    stack 구조로 만들어서 callback 을 사용하면 try, except 보다  
+    코드가 읽기 쉬워짐, 대규모 코드개발에서 많이 쓰이는 방법
+
+    callback으로 이런 처리를 꼭 해주세요라는 명시적으로 코드 구현이 가능함
+
+    ``` python
+    import contextlib
+
+    def is_ok_job():
+        try:
+            print('do something')
+            raise Exception('error')
+            # return True
+        except Exception:
+            return False
+
+    def cleanup():
+        print('clean up')
+
+    def cleanup2():
+        print('clean up2')
+
+    # try:
+    #     is_ok = is_ok_job()
+    #     print('more task')
+    # finally:
+    #     if not is_ok:
+    #         cleanup()
+
+    with contextlib.ExitStack() as stack:
+        stack.callback(cleanup)
+        stack.callback(cleanup2)
+
+        @stack.callback
+        def cleanup3():
+            print('clean up3')
+
+        is_ok = is_ok_job()  # False
+        print('more task')
+
+        if is_ok:
+            stack.pop_all()
+    ```
+
+25. io 스트림
+
+
+26. collections.ChainMap
+
+
+27. collections.defaultdict
+
+
+28. collections.Counter
+
+
+29. collections.deque
+
+
+30. collections.namedtuple
+
+
+31. collections.OrderedDeict 와 Python3.6의 dict
+
+
+32. 정규표현 re
+33. 정규표현의 re.group 과 re.compile 그리고 re.VERBOSE
+34. 정규표현의 re.split 의 분할과 re.compile의 치환
+35. 정규표현의 Greedy
+36. format 표기
+37. repr 와 str
+38. pprint vs json.dumps
+39. 비트 연산
+40. Enum
+41. functools.lru_cache 와 memoize
+42. functools.wraps
+43. functools.partial
+
 ### Section 19: Graphic
 
 44. 어린이도 즐길 수 있는 그래픽 turtle
