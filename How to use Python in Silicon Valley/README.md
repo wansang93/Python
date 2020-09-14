@@ -2081,37 +2081,238 @@ start at 09 June, 2020
 
 25. io 스트림
 
+    url에 있는 파일을 압축을 풀어 디크스에 저장하지 않고 읽어오는 방법
+
+    ``` python
+    import io
+    import requests
+    import zipfile
+
+    url = ('https://files.pythonhosted.org/packages/fd/53/'
+        'a626e098cbbc443a5bba1e0f780d1fe97115218a8f5d1e2df6bfa1f47a31/'
+        'setuptools-50.1.0.zip')
+
+    r = requests.get(url)
+    f = io.BytesIO()
+    r = requests.get(url)
+    f.write(r.content)
+
+    with zipfile.ZipFile(f) as z:
+        with z.open('setuptools-50.1.0/README.rst') as r:
+            print(r.read().decode())
+    ```
 
 26. collections.ChainMap
 
+    복잡한 딕셔너리를 다룰때는 ChainMap을 사용해보자(like kind a logging system)
+
+    ``` python
+    import collections
+
+    a = {'a': 'a', 'c': 'c', 'num': 0}
+    b = {'b': 'b', 'c': 'cc'}
+    c = {'b': 'bbb', 'c': 'ccc'}
+
+    # print(a)  # {'a': 'a', 'c': 'c', 'num': 0}
+    # a.update(b)  # 중복된 값은 덮어 쓰기
+    # print(a)  # {'a': 'a', 'c': 'cc', 'num': 0, 'b': 'b'}
+
+    # 덮어 쓰기 되돌리기가 불가해서 체인 맵 사용해서 해결
+    m = collections.ChainMap(a, b, c)
+    print(m)
+    print(m.maps)  # m을 리스트로 반환
+    print(m['c'])  # 순서 상 제일 앞쪽에서 부터 사용
+    # ChainMap({'a': 'a', 'c': 'c', 'num': 0}, {'b': 'b', 'c': 'cc'}, {'b': 'bbb', 'c': 'ccc'})
+    # [{'a': 'a', 'c': 'c', 'num': 0}, {'b': 'b', 'c': 'cc'}, {'b': 'bbb', 'c': 'ccc'}]
+    # c
+
+    m.maps.reverse()  # m을 거꾸로 하여
+    print(m.maps)  # m을 리스트로 반환
+    print(m['c'])  # 기존 m의 뒤에서(m의 reverse)부터 c값을 찾음
+    # [{'b': 'bbb', 'c': 'ccc'}, {'b': 'b', 'c': 'cc'}, {'a': 'a', 'c': 'c', 'num': 0}]
+    # ccc
+
+    m.maps.insert(0, {'c': 'CCCCCC'})  # create: m의 0번째에 key값에 c, value값에 CCCCCC를 넣음
+    print(m.maps)  # read
+    print(m['c'])
+    # [{'c': 'CCCCCC'}, {'b': 'bbb', 'c': 'ccc'}, {'b': 'b', 'c': 'cc'}, {'a': 'a', 'c': 'c', 'num': 0}]
+    # CCCCCC
+
+    del m.maps[0]  # delete
+
+    m['b'] = 'BBBBB'  # update
+    print(m.maps)
+    # [{'b': 'BBBBB', 'c': 'ccc'}, {'b': 'b', 'c': 'cc'}, {'a': 'a', 'c': 'c', 'num': 0}]
+
+    # ChainMap을 상속받아서 원하는 기능을 더 넣을 수 있어요
+    class DeepChainMap(collections.ChainMap):
+        # setitem은 딕셔너리에서 세팅을 할 때 기본적으로 나오는 함수에요
+        def __setitem__(self, key, value):
+            # ChainMap을 순회
+            for mapping in self.maps:
+                # value의 type이 int 이고 그 값이 넣으려는 값보다 작으면
+                if type(mapping[key]) is int and mapping[key] < value:
+                    # 갱신
+                    mapping[key] = value
+                return
+            # 위에 해당사항이 없으면 0번째에 생성
+            self.maps[0][key] = value
+
+    m = DeepChainMap(a, b, c)
+    print(m)
+    # DeepChainMap({'a': 'a', 'c': 'c', 'num': 1}, {'b': 'b', 'c': 'cc'}, {'b': 'BBBBB', 'c': 'ccc'})
+
+    m['num'] = 1
+    print(m['num'])  # 1
+    m['num'] = -1
+    print(m['num'])  # 1
+    ```
 
 27. collections.defaultdict
 
+    dictionary를 정의하는 방법
+
+    ``` python
+    import collections
+
+    l = ['a', 'a', 'a', 'b', 'b', 'c']
+    s = [('red', 1), ('blue', 2), ('red', 3), ('blue', 4),
+        ('red', 1), ('blue', 4)]
+
+    # 내가 아는 방법
+    d = {}
+    for word in l:
+        if word not in d:
+            d[word] = 0
+        d[word] += 1
+    print(d)
+
+    # 내가 아는 방법을 더 간단히
+    d2 = {}
+    for word in l:
+        d2.setdefault(word, 0)
+        d2[word] += 1
+    print(d2)
+
+    # defaultdict을 활용하여 value에 자동으로 int의 기본값(0)을 넣어주는 함수 생성
+    d3 = collections.defaultdict(int)
+    for word in l:
+        d3[word] += 1
+    print(d3)  # defaultdict(<class 'int'>, {'a': 3, 'b': 2, 'c': 1})
+
+    # defaultdict을 활용하여 value 값이 set로 설정하여 넣어주기
+    d4 = collections.defaultdict(set)
+    for k, v in s:
+        d4[k].add(v)  # set 이기 때문에 add 함수를 사용
+    print(d4)  # defaultdict(<class 'set'>, {'red': {1, 3}, 'blue': {2, 4}})
+    ```
 
 28. collections.Counter
 
+``` python
+
+```
 
 29. collections.deque
 
+deque는 리스트처럼 추가, 삭제 등이 가능하고
+
+stack과 queue 를 내부함수로 둘 다 구현이 가능하며
+
+메모리를 효율적으로 사용하기 때문에 좋음
+
+``` python
+import collections
+import queue
+
+# Double-end queue
+collections.deque
+
+q = queue.Queue()  # first in first out
+lq = queue.LifoQueue()  # last in first out
+l = []  # list
+d = collections.deque()  # deque는 메모리 관계상 효율적으로 관리함
+
+#
+for i in range(3):
+    q.put(i)
+    lq.put(i)
+    l.append(i)
+    d.append(i)
+
+# 해당 자료구조에서 하나씩 꺼내기
+for _ in range(3):
+    print(f'FIFO: {q.get()}')
+    print(f'LIFO: {lq.get()}')
+    print(f'list: {l.pop()}')
+    print(f'd   : {d.pop()}')
+    # print(f'list: {l.pop(0)}')  # 제일 앞에 꺼내기
+    # print(f'd   : {d.popleft()}')  # 제일 앞에 꺼내기
+    print()
+
+for i in range(3):
+    d.append(i)
+
+# 회전하기
+print(d)  # deque([0, 1, 2])
+d.rotate()
+print(d)  # deque([2, 0, 1])
+d.rotate()
+print(d)  # deque([1, 2, 0])
+
+# 삽입하기
+d.extend('x')
+print(d)  # deque([1, 2, 0, 'x'])
+d.extendleft('y')
+print(d)  # deque(['y', 1, 2, 0, 'x'])
+
+```
 
 30. collections.namedtuple
 
+``` python
+
+```
 
 31. collections.OrderedDeict 와 Python3.6의 dict
 
 
 32. 정규표현 re
+
+
 33. 정규표현의 re.group 과 re.compile 그리고 re.VERBOSE
+
+
 34. 정규표현의 re.split 의 분할과 re.compile의 치환
+
+
 35. 정규표현의 Greedy
+
+
 36. format 표기
+
+
 37. repr 와 str
+
+
 38. pprint vs json.dumps
+
+
 39. 비트 연산
+
+
 40. Enum
+
+
 41. functools.lru_cache 와 memoize
+
+
 42. functools.wraps
+
+
 43. functools.partial
+
+
 
 ### Section 19: Graphic
 
