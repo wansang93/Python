@@ -2209,185 +2209,350 @@ start at 09 June, 2020
 
 28. collections.Counter
 
-갯수를 샐 때 유용한 함수 Counter
+    갯수를 샐 때 유용한 함수 Counter
 
-``` python
-import collections
+    ``` python
+    import collections
 
-d = {}
-l = ['a', 'a', 'a', 'b', 'b', 'c', 'c', 'd']
-s = [('red', 1), ('blue', 2), ('red', 3), ('blue', 4),
-     ('red', 1), ('blue', 4)]
+    d = {}
+    l = ['a', 'a', 'a', 'b', 'b', 'c', 'c', 'd']
+    s = [('red', 1), ('blue', 2), ('red', 3), ('blue', 4),
+        ('red', 1), ('blue', 4)]
 
-c = collections.Counter()
-for word in l:
-    c[word] += 1
-print(c)
-print(c.most_common(2))  # 2번째로 많은 값들 return(중복 x)
-print(c.values())
+    c = collections.Counter()
+    for word in l:
+        c[word] += 1
+    print(c)
+    print(c.most_common(2))  # 2번째로 많은 값들 return(중복 x)
+    print(c.values())
 
-import re
-import os
+    import re
+    import os
 
-with open(os.path.abspath(__file__), 'r', encoding='utf-8') as f:
-    words = re.findall('\\w+', f.read().lower())
-    print(collections.Counter(words).most_common(20))
-
-
-```
+    with open(os.path.abspath(__file__), 'r', encoding='utf-8') as f:
+        words = re.findall('\\w+', f.read().lower())
+        print(collections.Counter(words).most_common(20))
+    ```
 
 29. collections.deque
 
-deque는 리스트처럼 추가, 삭제 등이 가능하고
+    deque는 리스트처럼 추가, 삭제 등이 가능하고
 
-stack과 queue 를 내부함수로 둘 다 구현이 가능하며
+    stack과 queue 를 내부함수로 둘 다 구현이 가능하며
 
-메모리를 효율적으로 사용하기 때문에 좋음
+    메모리를 효율적으로 사용하기 때문에 좋음
 
-``` python
-import collections
-import queue
+    ``` python
+    import collections
+    import queue
 
-# Double-end queue
-collections.deque
+    # Double-end queue
+    collections.deque
 
-q = queue.Queue()  # first in first out
-lq = queue.LifoQueue()  # last in first out
-l = []  # list
-d = collections.deque()  # deque는 메모리 관계상 효율적으로 관리함
+    q = queue.Queue()  # first in first out
+    lq = queue.LifoQueue()  # last in first out
+    l = []  # list
+    d = collections.deque()  # deque는 메모리 관계상 효율적으로 관리함
 
-#
-for i in range(3):
-    q.put(i)
-    lq.put(i)
-    l.append(i)
-    d.append(i)
+    #
+    for i in range(3):
+        q.put(i)
+        lq.put(i)
+        l.append(i)
+        d.append(i)
 
-# 해당 자료구조에서 하나씩 꺼내기
-for _ in range(3):
-    print(f'FIFO: {q.get()}')
-    print(f'LIFO: {lq.get()}')
-    print(f'list: {l.pop()}')
-    print(f'd   : {d.pop()}')
-    # print(f'list: {l.pop(0)}')  # 제일 앞에 꺼내기
-    # print(f'd   : {d.popleft()}')  # 제일 앞에 꺼내기
-    print()
+    # 해당 자료구조에서 하나씩 꺼내기
+    for _ in range(3):
+        print(f'FIFO: {q.get()}')
+        print(f'LIFO: {lq.get()}')
+        print(f'list: {l.pop()}')
+        print(f'd   : {d.pop()}')
+        # print(f'list: {l.pop(0)}')  # 제일 앞에 꺼내기
+        # print(f'd   : {d.popleft()}')  # 제일 앞에 꺼내기
+        print()
 
-for i in range(3):
-    d.append(i)
+    for i in range(3):
+        d.append(i)
 
-# 회전하기
-print(d)  # deque([0, 1, 2])
-d.rotate()
-print(d)  # deque([2, 0, 1])
-d.rotate()
-print(d)  # deque([1, 2, 0])
+    # 회전하기
+    print(d)  # deque([0, 1, 2])
+    d.rotate()
+    print(d)  # deque([2, 0, 1])
+    d.rotate()
+    print(d)  # deque([1, 2, 0])
 
-# 삽입하기
-d.extend('x')
-print(d)  # deque([1, 2, 0, 'x'])
-d.extendleft('y')
-print(d)  # deque(['y', 1, 2, 0, 'x'])
-
-```
+    # 삽입하기
+    d.extend('x')
+    print(d)  # deque([1, 2, 0, 'x'])
+    d.extendleft('y')
+    print(d)  # deque(['y', 1, 2, 0, 'x'])
+    ```
 
 30. collections.namedtuple
 
-namedtuple을 사용하면 딕셔너리 처럼 key 값(named)으로 튜플을 읽어올 수 있어요
+    namedtuple을 사용하면 딕셔너리 처럼 key 값(named)으로 튜플을 읽어올 수 있어요
 
-``` python
-import collections
+    ``` python
+    import collections
 
-# 1. 일반적인 튜플
-p = (10, 20)
-print(p[0])  # 10
-# p[0] = 100  # -> error 발생
+    # 1. 일반적인 튜플
+    p = (10, 20)
+    print(p[0])  # 10
+    # p[0] = 100  # -> error 발생
 
-# 2. Point라는 객체로 생성하여 x, y 를 접근하는 방법
-# (튜플과 공통점) x값만 외부에서 접근하지 못하게 설정
-# (튜플과 차이점) 인덱스가 아닌 이름으로(x, y) 호출 가능
-class Point(object):
-    def __init__(self, x, y):
-        self.__x = x
-        self.y = y
+    # 2. Point라는 객체로 생성하여 x, y 를 접근하는 방법
+    # (튜플과 공통점) x값만 외부에서 접근하지 못하게 설정
+    # (튜플과 차이점) 인덱스가 아닌 이름으로(x, y) 호출 가능
+    class Point(object):
+        def __init__(self, x, y):
+            self.__x = x
+            self.y = y
 
-    @property
-    def get_x(self):
-        return self.__x
+        @property
+        def get_x(self):
+            return self.__x
 
-p = Point(x=10, y=20)
-print(p.get_x)  # 10
-# print(p.x)  # -> error 발생: 프라이빗으로 설정하여 접근 불가
+    p = Point(x=10, y=20)
+    print(p.get_x)  # 10
+    # print(p.x)  # -> error 발생: 프라이빗으로 설정하여 접근 불가
 
-# 3. namedtuple: 위에 Point 객체의 장점을 따와 쉽게 만듬
-Point2 = collections.namedtuple('Point2_name', ['x', 'y'])
-Point3 = collections.namedtuple('Point3_name', 'x, y')
-Point4 = collections.namedtuple('Point4_name', 'x y')
-p = Point2(10, y=20)
-print(p.x)  # 10
-# p.x = 100  # error 발생: 튜플이라서
+    # 3. namedtuple: 위에 Point 객체의 장점을 따와 쉽게 만듬
+    Point2 = collections.namedtuple('Point2_name', ['x', 'y'])
+    Point3 = collections.namedtuple('Point3_name', 'x, y')
+    Point4 = collections.namedtuple('Point4_name', 'x y')
+    p = Point2(10, y=20)
+    print(p.x)  # 10
+    # p.x = 100  # error 발생: 튜플이라서
 
-p1 = Point2._make([100, 200])
-print(p1)  # Point2_name(x=100, y=200)
-print(p1._asdict())  # {'x': 100, 'y': 200}
+    p1 = Point2._make([100, 200])
+    print(p1)  # Point2_name(x=100, y=200)
+    print(p1._asdict())  # {'x': 100, 'y': 200}
 
-p1._replace(x=500)  # p1 이 바뀌지 않음
-print(p1)  # Point2_name(x=100, y=200)
+    p1._replace(x=500)  # p1 이 바뀌지 않음
+    print(p1)  # Point2_name(x=100, y=200)
 
-p2 = p1._replace(x=500)  # p2 만 바뀜
-print(p2)  # Point2_name(x=500, y=200)
+    p2 = p1._replace(x=500)  # p2 만 바뀜
+    print(p2)  # Point2_name(x=500, y=200)
 
-# 상속 받아 활용하기
-class Sumpoint(collections.namedtuple('Point', ['x', 'y'])):
-    
-    @property
-    def total(self):
-        return self.x + self.y
+    # 상속 받아 활용하기
+    class Sumpoint(collections.namedtuple('Point', ['x', 'y'])):
+        
+        @property
+        def total(self):
+            return self.x + self.y
 
-p3 = Sumpoint(2, 3)
-print(p3.x, p3.y, p3.total)  # 2 3 5
+    p3 = Sumpoint(2, 3)
+    print(p3.x, p3.y, p3.total)  # 2 3 5
 
-# csv 파일을 namedtuple로 읽어오기
-import csv
-import os
+    # csv 파일을 namedtuple로 읽어오기
+    import csv
+    import os
 
-file_path = os.path.dirname(os.path.abspath(__file__)) + '\\names.csv'
+    file_path = os.path.dirname(os.path.abspath(__file__)) + '\\names.csv'
 
-# csv 파일 쓰기
-with open(file_path, 'w', newline='\n') as csvfile:
-    field_names = ['first', 'last', 'address']
-    writer = csv.DictWriter(csvfile, fieldnames=field_names)
-    writer.writeheader()
-    writer.writerow({'first': 'Mike', 'last': 'Jackson', 'address': 'A'})
-    writer.writerow({'first': 'Jun', 'last': 'Sakai', 'address': 'B'})
-    writer.writerow({'first': 'Nancy', 'last': 'Mask', 'address': 'C'})
+    # csv 파일 쓰기
+    with open(file_path, 'w', newline='\n') as csvfile:
+        field_names = ['first', 'last', 'address']
+        writer = csv.DictWriter(csvfile, fieldnames=field_names)
+        writer.writeheader()
+        writer.writerow({'first': 'Mike', 'last': 'Jackson', 'address': 'A'})
+        writer.writerow({'first': 'Jun', 'last': 'Sakai', 'address': 'B'})
+        writer.writerow({'first': 'Nancy', 'last': 'Mask', 'address': 'C'})
 
-# csv 파일 읽어오기
-with open(file_path, 'r') as f:
-    csv_reader = csv.reader(f)
-    Names = collections.namedtuple('Names', next(csv_reader))
-    for row in csv_reader:
-        names = Names._make(row)
-        print(names.first, names.last, names.address)
-```
+    # csv 파일 읽어오기
+    with open(file_path, 'r') as f:
+        csv_reader = csv.reader(f)
+        Names = collections.namedtuple('Names', next(csv_reader))
+        for row in csv_reader:
+            names = Names._make(row)
+            print(names.first, names.last, names.address)
+    ```
 
 31. collections.OrderedDeict 와 Python3.6의 dict
 
+    Python 2.7.9 이전 버전은 dictionary가 순서가 보장이 안됨
+
+    따라서 orderedDeict를 사용 했었음, 현재버전(3.8)은 순서를 보장 함
+
+    ``` python
+    import collections
+
+    d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
+
+    od = collections.OrderedDict(d)
+    print(od == d)
+
+    sorted(od.items(), key=lambda x: x[0])
+    sorted(od.items(), key=lambda x: x[1])
+    sorted(od.items(), key=lambda x: len(x[0]), reverse=True)
+    ```
 
 32. 정규표현 re
 
+    re documents link -> [https://docs.python.org/3.8/library/re.html?highlight=re#module-re](https://docs.python.org/3.8/library/re.html?highlight=re#module-re)
+
+    - . -> 아무거나
+    - ? -> 0개, 1개
+    - \+ -> 1번 이상
+    - \* -> 0번 이상
+    - {2, 4} -> 2개 이상 4개 이하
+    - ^ -> not
+    - ^ -> 제일 앞에 올때는 시작하는 부분이 맞는지
+    - $ -> 제일 뒤에 쓰고 끝나는 부분이 맞는지
+
+    ``` python
+    import re
+
+    '''
+    match()     문자열 처음부터 정규식과 매치되는지 조사
+    search()    문자열 전체를 검색하여 정규식과 매치되는지 조사
+    findall()   정규식과 매치되는 모든 문자열을 리스트로 리턴
+    finditer()  정규식과 매치되는 모든 문자열을 iterator 객체로 리턴
+    '''
+
+    m = re.match('a.c', 'abc')
+    print(m)  # <re.Match object; span=(0, 3), match='abc'>
+    print(m.group())  # abc
+
+    m = re.search('a.c', 'abc')
+    print(m)  # <re.Match object; span=(0, 3), match='abc'>
+    print(m.span())  # (0, 3)
+    print(m.group())  # abc
+
+    m = re.finditer('a.c', 'test abc test abc')
+    print(m)  # # <callable_iterator object at 0x000001B484E49550>
+    print([w.group() for w in m])  # ['abc', 'abc']
+    ```
 
 33. 정규표현의 re.group 과 re.compile 그리고 re.VERBOSE
 
+    re.compile로 특정 문자를 정규표현식으로 컴파일하고
+
+    옵션으로 마지막 값에 re.VERBOSE를 쓰면 문자열로 지정하여 태그 등을 남겨 읽기가 쉽습니다.
+
+    ``` python
+    RE_STACK_ID = re.compile(r"""
+        arn:aws:cloudformation:
+        (?P<region>[\w-]+):      # region
+        (?P<account_id>[\d]+)    # account_id
+        :stack/
+        (?P<stack_name>[\w-]+)   # stack name
+        /[\w\d-]+
+        """, re.VERBOSE)
+
+    for s in [s1, s2]:
+        m = RE_STACK_ID.match(s)
+        if m:
+            print(m)  # <re.Match object; span=(0, 123), match='arn:aws:cloudformation:us-east-1:123456789012:sta>
+            print(m.group('region'))
+            print(m.group('account_id'))
+            print(m.group('stack_name'))
+    ```
 
 34. 정규표현의 re.split 의 분할과 re.compile의 치환
 
+    문자열에서 특수한 경우를 빼거나 더할 때 좋음
+
+    ``` python
+    import re
+
+    # 1. 영문자를 띄어쓰기 기준으로 구하는 방법
+    s = 'My name is !@# Mike'
+    print(s.split())  # ['My', 'name', 'is', '!@#', 'Mike']
+
+    p = re.compile(r'\W+')
+    print(p.split(s))  # ['My', 'name', 'is', 'Mike']
+
+    # 2. 특정 색깔을 colour로 변환하는 방법, and count how many colours
+    p = re.compile(r'(blue|white|red)')
+    print(p.sub('colour', 'blue time white red black'))  # colour time colour colour black
+    print(p.sub('colour', 'blue time white red black', count=1))  # colour time white red black  
+    print(p.subn('colour', 'blue time white red black'))  # ('colour time colour colour black', 3)
+
+    # 3. 특정 문자에 숫자들을 16진수로 바꾸기
+    def hexrepl(match):
+        value = int(match.group())
+        return hex(value)
+
+    p = re.compile(r'\d')
+    print(p.sub(hexrepl, '12345 95 11 test test2'))  # 0x10x20x30x40x5 0x90x5 0x10x1 test test0x2
+    ```
 
 35. 정규표현의 Greedy
 
+    ``` python
+    import re
+
+    s = '<html><head><title>Title</title></head></html>'
+
+    print(re.findall('<.*>', s))  # 1개 출력
+    # ['<html><head><title>Title</title></head></html>']
+    print(re.findall('<.*?>', s))  # 6개 출력
+    # ['<html>', '<head>', '<title>', '</title>', '</head>', '</html>']
+    ```
 
 36. format 표기
 
+    formating 과 f-string을 비슷하게 사용할 수 있어서 f-string으로 표현하였습니다.
+
+    ``` python
+    t = (1, 2, 3)
+
+    # 1. 기본적인 사용법
+    print(f'{t[0]}, {t[2]}')
+    # 1, 3
+    print('{0} {2}'.format(*t))
+    # 1 3
+
+    # 2. 빈공간 만들기
+    center='center'; fill='*'; align='^'; width=30
+    left = 'left'; right = 'right'
+    print(f'{left:<30}')
+    print(f'{right:>30}')
+    print(f'{center:^30}')
+    print(f'{center:{fill}{align}{width}}')
+    # left
+    #                         right
+    #             center
+    # ************center************
+
+    # 3. 숫자에 소숫점 만들기
+    print(f'{123456789:,}')  # 123,456,789
+
+    # 4. 숫자에 + 적기
+    print(f'{3.14:+f} {3.14:+f}')  # +3.140000 +3.140000
+
+    # 5. % 표기법
+    nums = 19 / 22
+    print(f'{nums:.2%}')  # 86.36%
+
+    # 6. 숫자 문자로 표기하기
+    hdr = 100
+    print(f'{hdr:d} {hdr:#x} {hdr:#o} {hdr:#b}')  # 100 0x64 0o144 0b1100100
+
+    # 7. 이쁘게 2, 8, 10, 16진수 출력하기
+    for i in range(16):
+        for base in 'bodX':
+            # i값을 5자리로 {b} {o} {d} {X}형식으로 출력
+            print(f'{i:5{base}}', end=' ')
+        print()
+    #     0     0     0     0
+    #     1     1     1     1
+    #    10     2     2     2
+    #    11     3     3     3
+    #   100     4     4     4
+    #   101     5     5     5
+    #   110     6     6     6
+    #   111     7     7     7
+    #  1000    10     8     8
+    #  1001    11     9     9
+    #  1010    12    10     A
+    #  1011    13    11     B 
+    #  1100    14    12     C
+    #  1101    15    13     D
+    #  1110    16    14     E
+    #  1111    17    15     F
+    ```
 
 37. repr 와 str
 
