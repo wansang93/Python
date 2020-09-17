@@ -2556,25 +2556,211 @@ start at 09 June, 2020
 
 37. repr 와 str
 
+    repr() 함수는 시스템(python interpreter)이 해당 객체를 인식할 수 있는 공식적인 문자열로 나타낼 때 사용
+
+    str() 함수는 사용자가 보기 쉬운 형태로 보여줄 때 사용
+
+    ``` python
+    # repr과 str의 출력 차이
+    import datetime
+    d = datetime.datetime.now()
+    print(d)  # 2020-09-16 23:00:27.783250
+    print(str(d))  # 2020-09-16 23:00:27.783250
+    print(repr(d))  # datetime.datetime(2020, 9, 16, 23, 0, 27, 783250)
+
+    # representation 표시법
+    test = 'test'
+    test1 = 'test1'
+    test2 = 'test2'
+    print(f'{test!r} {test1} {test2!s}')
+
+    class Point(object):
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+        def __repr__(self):
+            return 'Point<object>'
+
+        def __str__(self):
+            return f'Point({self.x}, {self.y})'
+
+    p = Point(10, 20)
+    print(f'{p!r} {p} {p!s}')
+    # Point<object> Point(10, 20) Point(10, 20)
+    ```
 
 38. pprint vs json.dumps
 
+    파이썬에서 예쁘게 출력하는 방법
+
+    ``` python
+    import json
+    import pprint
+
+    # pprint를 활용하여 이쁘게 출력하기
+    d = {'A': 'a', 'B': 'b', 'C': {'D': 'd', 'E': 'e'}}
+    pp2 = pprint.PrettyPrinter(indent=4, width=40, compact=True, depth=2)
+    pp2.pprint(d)
+
+    # json.dumps를 이용하여 이쁘게 출력하기
+    # https://docs.python.org/3/library/pprint.html -> example
+    from urllib.request import urlopen
+    with urlopen('https://pypi.org/pypi/sampleproject/json') as resp:
+        project_info = json.load(resp)['info']
+
+    print(json.dumps(project_info, indent=4))
+    ```
 
 39. 비트 연산
 
+    ``` python
+    # or
+    print(0 | 0)  # 0
+    # and
+    print(1 & 1)  # 1
+    # xor
+    print(0 ^ 0)  # 0
+    print(0 ^ 1)  # 1
+    # not
+    print(~0)  # -1
+    print(1)  # 1
+    print(~1)  # -2
+    print(bin(~0))  # -0b1
+    print(bin(1))  # 0b1
+    print(bin(~1))  # -0b10
+    # bit shift
+    print(bin(1 << 0))  # 0b1
+    print(bin(1 << 1))  # 0b10
+    print(bin(1 << 2))  # 0b100
+    ```
 
 40. Enum
 
+    Enumerated type 으로 고유 상숫값에 연결된 기호 이름(member)의 집합으로 하나의 객체 타입
+
+    enum.Enum 이 베이스 클래스이고 특히 enum.IntEnum이 많이 쓰임, 예제에서는 enum.IntFlag도 참조
+
+    ``` python
+    # @enum.unique  # value의 unique 하지 않으면 error occur
+    class Status3(enum.IntEnum):
+        ACTIVE = 1
+        # ACTIVE = 2 -> error occured: member가 중복
+        INACTIVE = 2
+        RUNNING = 3
+
+    if db['stack1'] == Status3.ACTIVE:
+        print('shutdown444')
+    elif db['stack1'] == Status3.INACTIVE:
+        print('terminate')
+
+    # 멤버십을 잃지 않고 비트 연산자를 사용하여 결합할 수 있는 열거형 상수를 만들기 위한 베이스 클래스
+    class Perm(enum.IntFlag):
+        R = 4  # READ
+        W = 2  # WRITE
+        X = 1  # 엑스큐션(?)
+
+    print(Perm.R | Perm.W)
+    print(repr(Perm.R | Perm.W | Perm.X))
+    RWX = Perm.R | Perm.W | Perm.X
+    print(Perm.W in RWX) 
+    ```
 
 41. functools.lru_cache 와 memoize
 
+    lru.cache를 만들어서 반복적인 연산을 회피함, cache에 memoize 기능이 있어서 가능
+
+    사용 예
+
+    rest_api에서 네트워크에서 여러가지 값을 가져올 때  
+    몇번씩이나 다른 웹서버에 access 해서 api_limit 초과해 못가져오는 경우 발생  
+    가지고 온 결과를 lru 캐쉬에 넣으면 api_limit을 안넘어서 속도, 효율성 등을 개선
+
+    ``` python
+    import functools
+
+    def memoize(f):
+        memo = {}
+        def _wrapper(n):
+            if n not in memo:
+                memo[n] = f(n)
+                print('hit')
+            return memo[n]
+        return _wrapper
+
+    # @memoize
+    @functools.lru_cache(maxsize=10)
+    def long_func(n):
+        r = 0
+        for i in range(10000000):
+            r += n * i
+        return r
+
+    print(long_func.cache_info())
+    ```
 
 42. functools.wraps
 
+    클로저로 함수를 구현한 경우 \_\_doc\_\_ 를 불러올 때 Wraper docstring으로 불리는 경우가 있다.
+
+    아래처럼 하면 Wraper가 아닌 원래 함수의 docstring으로 나온다.
+
+    ``` python
+    import functools
+
+    def d2(f):
+        @functools.wraps(f)
+        def w():
+            """Wraper docstring"""
+            return f()
+        return w
+
+    @d2
+    def example2():
+        """Example docstring"""
+        print('example')
+
+    help(example2)  # Example docstring
+    print(example2.__doc__)  # Example docstring
+    ```
 
 43. functools.partial
 
+    partial에 함수와 인수를 호출하여 클로저 기능에 가독성이 좋게 만들 수 있음
 
+    ``` python
+    import functools
+
+    def f2(x, y):
+        return x + y
+
+    def task3(f2):
+        print('start')
+        print(f2())
+
+    p = functools.partial(f2, 10, 20)
+    task3(p)
+    # start
+    # 30 
+    ```
+
+    기존 코드
+    
+    ``` python
+    def outer(x, y):
+        def inner():
+            return x + y
+        return inner
+
+    def task2(f):
+        print('start')
+        print(f())
+
+    f = outer(30, 20)
+    task2(f)
+    # start
+    # 50  
+    ```
 
 ### Section 19: Graphic
 

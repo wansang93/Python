@@ -4,7 +4,7 @@ print(str(1))  # 1
 print(repr(1))  # 1
 print(repr(str(1)))  # '1'
 
-# 
+# repr과 str의 출력 차이
 import datetime
 d = datetime.datetime.now()
 print(d)  # 2020-09-16 23:00:27.783250
