@@ -18,11 +18,15 @@ SELECT * FROM studentTBL;
 -- DataBase 설계
 -- DB : BigDataDB
 -- Table : rawImageTBL
+CREATE DATABASE bigdata_db;
+USE bigdata_db;
+CREATE TABLE rawimage_tbl
+(raw_id INT AUTO_INCREMENT PRIMARY KEY, raw_height smallint, raw_width smallint, raw_fname VARCHAR(30), raw_update DATE, raw_uploader VARCHAR(20), raw_avg SMALLINT, raw_data LONGBLOB);
 ```
 
 >논리적 설계 : 아이디, 가로크기, 세로크기, 파일명, 평균값, 업로드 일자, 업로더, 이미지 파일
 >
->물리적 설계 : raw_id int, raw_height smallint, raw-width smallint, rwa_fname VARCHAR(30), raw_update DATE, raw_uploader VRCHAR(20), raw_data LONGBLOB)
+>물리적 설계 : raw_id int, raw_height smallint, raw-width smallint, raw_fname VARCHAR(30), raw_update DATE, raw_uploader VRCHAR(20), raw_data LONGBLOB)
 
 ### LOB
 
@@ -102,74 +106,214 @@ LOB(Large Object) 란 큰 객체이다.
 
   ``` python
   # MySQL 에 RAW 파일 쓰기
-  from tkinter.filedialog import *
-  import math
-  import os
-  import os.path
-  import pymysql
-  import datetime
-  
-  # 변수
-  IP_ADDR = '192.168.56.111'
-  USER_NAME = 'root'
-  USER_PASS = '1234'
-  DB_NAME = 'BigData_DB'
-  CHAR_SET = 'utf8'
-  
-  # 함수
-  def select_file():
-      filename = askopenfilename(parent=window,
-          filetypes=(("RAW file", "*.raw"), ("All file", "*.*")))
-      if filename == '' or filename is None:
-          return
-      edt1.insert(0, str(filename))
-  
-  def upload_data():
-      con = pymysql.connect(host=IP_ADDR, user=USER_NAME, password=USER_PASS,
-          db=DB_NAME, charset=CHAR_SET)
-      cur = con.cursor()
-  
-      fullname = edt1.get()
-  
-      with open(fullname, 'rb') as rfp:
-          binData = rfp.read()
-      fname = os.path.basename(fullname)
-      fsize = os.path.getsize(fullname)
-      height = width = int(math.sqrt(fsize))
-      now = datetime.datetime.now()
-      upDate = now.strftime('%Y-%m-%d')
-      upUser = USER_NAME
-      sql = "INSERT INTO rawImage_TBL(raw_id, raw_height," \
-            "raw_width, raw_fname, raw_update, raw_uploader, raw_avg, raw_data)"
-      sql += " VALUES(NULL," + str(height) + "," + str(width) + ",'"
-      sql += fname + "','" + upDate + "','" + upUser + "',0 , "
-      sql += " %s )"
-      tupleData = (binData,)
-      cur.execute(sql, tupleData)
-  
-      con.commit()
-      cur.close()
-      con.close()
-      print(sql)
-  
-  # 메인
-  window = Tk()
-  window.geometry("500x200")
-  window.title("Raw --> DB Ver 0.02")
-  
-  edt1 = Entry(window, width=50); edt1.pack()
-  btnFile = Button(window, text="파일선택", command=select_file); btnFile.pack()
-  btnUpload = Button(window, text="업로드", command=upload_data); btnUpload.pack()
-  
-  window.mainloop()
+
+    # Import
+    import tkinter as tk
+    from tkinter import simpledialog
+    from tkinter import filedialog
+    import pymysql
+    import os
+    import math
+    import datetime
+    import tempfile
+
+    # Global Variable
+    IP_ADDR = '192.168.111.10'
+    USER_NAME = 'root'
+    USER_PW = '1234'
+    DB_NAME = 'bigdata_db'
+    CHAR_SET = 'utf8'
+
+
+    # Function
+    def select_file():
+    file_name = tk.filedialog.askopenfilename(
+    parent=window, filetype=(('RAW file', '*.raw'), ('All file', '*.*')))
+    if file_name == '' or filedialog == None:
+    return
+    edt1.insert(0, str(file_name))
+
+
+    def upload_file():
+    con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
+    password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+    cur =con.cursor()
+
+    full_name=edt1.get()
+    with open(full_name, 'rb') as rfp:
+    bin_data = rfp.read()
+
+    fname = os.path.basename(full_name)
+    fsize = os.path.getsize(full_name)
+    height = width = int(math.sqrt(fsize))
+    now = datetime.datetime.now()
+    up_date = now.strftime('%Y-%m-%d')
+    up_user = USER_NAME
+
+    sql = (f'INSERT INTO rawImage_TBL(raw_id, raw_height, raw_width, '
+        'raw_fname, raw_update, raw_uploader, raw_avg, raw_data) '
+        'VALUES(NULL, {}, {}, "{}", "{}", "{}", 0, %s);'
+        .format(str(height), str(width), fname, up_date, up_user))
+
+    print(sql)
+    tuple_data = (bin_data,)
+    cur.execute(sql, tuple_data)
+    con.commit()
+    cur.close()
+    con.close()
+
+
+    def download_file():
+    con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
+    password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+
+    cur = con.cursor()
+    sql = "SELECT raw_fname, raw_data FROM rawImage_TBL WHERE raw_id = 1"
+    cur.execute(sql)
+
+    fname, bin_data = cur.fetchone()
+    full_path = tempfile.gettempdir() + '/' + fname
+    with open(full_path, 'wb') as wfp:
+    wfp.write(bin_data)
+
+    print(full_path)
+    cur.close()
+    con.close()
+    print(sql)
+
+
+    # Main
+    if __name__ == "__main__":
+    window = tk.Tk()
+    window.geometry('500x200')
+    window.title('Raw -> DB Ver0.01')
+
+    edt1 = tk.Entry(window, width=50)
+    edt1.pack()
+
+    btn_file = tk.Button(window, text='Select File', command=select_file)
+    btn_up_file = tk.Button(window, text='Upload', command=upload_file)
+    btn_down_file = tk.Button(window, text='Download', command=download_file)
+
+    btn_file.pack()
+    btn_up_file.pack()
+    btn_down_file.pack()
+
+    window.mainloop()
   ```
 
+### MySQL DB 업로드 Version 0.01
+
+- 08-02 MySQL DB 01
+
+    ``` python
+    # Import
+    import tkinter as tk
+    from tkinter import simpledialog
+    from tkinter import filedialog
+    import pymysql
+    import os
+    import math
+    import datetime
+    import tempfile
+
+    # Global Variable
+    IP_ADDR = '192.168.111.10'
+    USER_NAME = 'root'
+    USER_PW = '1234'
+    DB_NAME = 'bigdata_db'
+    CHAR_SET = 'utf8'
+
+
+    # Function
+    def select_file():
+        file_name = tk.filedialog.askopenfilename(
+            parent=window, filetype=(('RAW file', '*.raw'), ('All file', '*.*')))
+        if file_name == '' or filedialog == None:
+            return
+        edt1.insert(0, str(file_name))
+
+
+    def upload_file():
+        con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
+            password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+        cur =con.cursor()
+
+        full_name=edt1.get()
+        with open(full_name, 'rb') as rfp:
+            bin_data = rfp.read()
+
+        fname = os.path.basename(full_name)
+        fsize = os.path.getsize(full_name)
+        height = width = int(math.sqrt(fsize))
+        now = datetime.datetime.now()
+        up_date = now.strftime('%Y-%m-%d')
+        up_user = USER_NAME
+
+        sql = ('INSERT INTO rawImage_TBL(raw_id, raw_height, raw_width, '
+            'raw_fname, raw_update, raw_uploader, raw_avg, raw_data) '
+            'VALUES(NULL, {}, {}, "{}", "{}", "{}", 0, %s);'
+            .format(str(height), str(width), fname, up_date, up_user))
+
+        print(sql)
+        tuple_data = (bin_data,)
+        cur.execute(sql, tuple_data)
+        con.commit()
+        cur.close()
+        con.close()
+
+
+    def download_file():
+        con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
+            password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+        
+        cur = con.cursor()
+        sql = "SELECT raw_fname, raw_data FROM rawImage_TBL WHERE raw_id = 1"
+        cur.execute(sql)
+
+        fname, bin_data = cur.fetchone()
+        full_path = tempfile.gettempdir() + '/' + fname
+        with open(full_path, 'wb') as wfp:
+            wfp.write(bin_data)
+
+        print(full_path)  # C:\Users\wansang\AppData\Local\Temp\
+        cur.close()
+        con.close()
+        print(sql)
+
+
+    # Main
+    if __name__ == "__main__":
+        window = tk.Tk()
+        window.geometry('500x200')
+        window.title('Raw -> DB Ver0.01')
+        
+        edt1 = tk.Entry(window, width=50)
+        edt1.pack()
+
+        btn_file = tk.Button(window, text='Select File', command=select_file)
+        btn_up_file = tk.Button(window, text='Upload', command=upload_file)
+        btn_down_file = tk.Button(window, text='Download', command=download_file)
+
+        btn_file.pack()
+        btn_up_file.pack()
+        btn_down_file.pack()
+
+        window.mainloop()
+    ```
+
+    결과
+
+    ![결과사진](./img_day8/8-2.png)
+    
 ## 과제
 
 - [컴퓨터 비전] 툴 기능 완성하기
   - 디스플레이 이미지에서 대용량 파일의 경우, 일정 크기로 보이게 하기
   - 히스토그램 데이터 시각화 기능을 matplotlib 없이 직접 구현하기
 - MySQL에 RAW파일 업로드 하기
-  - 선택 기능 1 : 특정 폴더를 선택하면 해당 폴더의 RAW 파일이 모두 업로드 되기
-  - 선택 기능 2 : RAW 파일의 평균, 최대값, 최소값도 계산되어 업로드
+  - 선택 기능 1: 특정 폴더를 선택하면 해당 폴더의 RAW 파일이 모두 업로드 되기
+  - 선택 기능 2: RAW 파일의 평균, 최대값, 최소값도 계산되어 업로드
 - [컴퓨터 비전] 툴이 데이터베이스에서 처리되도록 하기
+  - 기능 1: 수정된 out_image 저장하기
+  - 기능 2: 불러오기
