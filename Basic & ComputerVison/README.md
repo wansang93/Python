@@ -13,11 +13,11 @@
 - [Day08](./Markdown/python_08.md) 시각화 프로그래밍(0.04): 모핑, 서버 DB에 .RAW 확장자 이미지 넣어보기
 - [Day09](./Markdown/python_09.md) 시각화 프로그래밍(0.06): 이미지 파일 크기 축소출력, DB 입출력, csv 입출력 
 - [Day10](./Markdown/python_10.md) 시각화 프로그래밍(0.08): Excel 입출력, csv파일 TreeView로 보기
-- [Day11](./Markdown/python_11.md) 1, 2주차 리뷰, 시각화 프로그래밍(1.00): NumPy로 변경
-- [Day12](./Markdown/python_12.md)
+- [Day11](./Markdown/python_11.md) 시각화 프로그래밍(1.00): NumPy로 변경 및 더블 모니터 사용, 1주차 2주차 리뷰
+- [Day12](./Markdown/python_12.md) 시각화 프로그래밍(2.00): 칼러(Pillow 라이브러리 사용) 지원
 - [Day13](./Markdown/python_13.md)
 - [Day14](./Markdown/python_14.md)
 - [Day15](./Markdown/python_15.md)
 - [Day16](./Markdown/python_16.md)
-- [Day17](https://drive.google.com/drive/folders/1JvLYfmCz0GJKoMaKGnJYqUTH-JElTeNa?usp=sharing) 프로젝트 PPT
-- Day18 프로젝트 발표 및 마무리
+- [Day17](./Markdown/python_17.md)
+- [Day18](./Visualization%20&%20Deep%20Learning.pdf) 프로젝트 PPT 프로젝트 발표 및 마무리

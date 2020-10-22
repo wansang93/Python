@@ -2,7 +2,9 @@
 
 오늘은 지금까지 한 파이썬 총 복습 및 리뷰의 시간이였습니다.
 
-자세한 필기는 다음 링크 참고 -> [https://github.com/RYUNSUN/](https://github.com/RYUNSUN/AI_Curriculum_Multicampus/blob/master/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0(%EB%94%A5%EB%9F%AC%EB%8B%9D)%20%ED%99%9C%EC%9A%A9%20AI%20%EC%84%A4%EA%B3%84/%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EA%B8%B0%EC%B4%88_Python/Contents/190619_day11.md)
+컴퓨터 비전 알고리즘 요약 -> [알고리즘 요약](./Computer%20Vision.md)
+
+복습 및 리뷰의 자세한 내용은 륜선이 누나 필기 링크 -> [https://github.com/RYUNSUN/](https://github.com/RYUNSUN/AI_Curriculum_Multicampus/blob/master/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0(%EB%94%A5%EB%9F%AC%EB%8B%9D)%20%ED%99%9C%EC%9A%A9%20AI%20%EC%84%A4%EA%B3%84/%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EA%B8%B0%EC%B4%88_Python/Contents/190619_day11.md)
 
 ## 복습 1~10일차
 
@@ -36,7 +38,7 @@
 
 ## 과제
 
-1. 컴퓨터비전 가능한 부분은 NumPy 버전으로 변경
+### 컴퓨터 비전 흑백 이미지(.raw) 시각화 with NumPy Version 1.01
 
    ``` python
    import math
@@ -52,12 +54,12 @@
 
    # ==================== Global Variable ====================
    window, canvas1, canvas2, paper1, paper2 = [None] * 5
-   file_name = ''
    in_h, in_w, in_image = 0, 0, []
    out_h, out_w, out_image = 0, 0, []
+   file_name = ''
    VIEW_X, VIEW_Y = 512, 512
    # ========== Mouse Event ==========
-   panYN = False
+   pan_yn = False
    sx, sy, ex, ey = [0] * 4
    # ========== Mask Value ==========
    # embossing mask(0)
@@ -95,7 +97,8 @@
       [1/9, 1/9, 1/9],
       [1/9, 1/9, 1/9],
       [1/9, 1/9, 1/9]]
-   mask_list = [embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
+   mask_list = [
+      embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
    # ========== Server default ==========
    IP_ADDR = '192.168.111.10'
    USER_NAME = 'root'
@@ -110,15 +113,15 @@
    def is_open_file(fname):
       if not fname:
          status.configure(text='Open is failed. Please try again')
-         return True
-      return False
+         return False
+      return True
 
 
    def is_save_file(fname):
       if not fname:
          status.configure(text=f'Save is failed. Please try again')
-         return True
-      return False
+         return False
+      return True
 
 
    def is_empty_image():
@@ -144,11 +147,12 @@
          parent=window,
          filetypes=(('RAW file', '*.raw'), ('All file', '*.*')),
       )
-      if is_open_file(file_name):
+      if not is_open_file(file_name):
          return
 
       load_image(file_name)
       equal_image()
+      display_new_image()
 
 
    # load image
@@ -221,7 +225,7 @@
          for j in np.arange(0, out_w, step_X):
                i = int(i)
                j = int(j)
-               r = g = b = out_image[i][j]
+               r = g = b = int(out_image[i][j])
                tmp_str += f' #{r:02x}{g:02x}{b:02x}'
          rgb_str += f'{{{tmp_str}}} '
       paper2.put(rgb_str)
@@ -236,6 +240,30 @@
       )
 
 
+   # save image
+   def save_out_image():
+      global out_h, out_w, out_image, window
+      if is_empty_image():
+         return
+
+      save_fp = tkinter.filedialog.asksaveasfile(
+         parent=window,
+         mode='wb',
+         defaultextension='*.raw',
+         filetypes=(('RAW file', '*.raw'), ('All file', '*.*')),
+      )
+      if not is_save_file(save_fp):
+         return
+
+      status.configure(text=f'Image is being saved at {save_fp.name}')
+      for i in range(out_h):
+         for j in range(out_w):
+               save_fp.write(struct.pack('B', out_image[i][j]))
+      status.configure(text=f'Image is saved at {save_fp.name}')
+      save_fp.close()
+
+
+   # ========== Vision Algorithm(1.01) ==========
    # equal image
    def equal_image():
       global in_h, in_w, out_h, out_w, in_image, out_image
@@ -243,39 +271,13 @@
       out_w = in_w
       out_image = in_image.copy()
 
-      display_new_image()
 
-
-   # save image
-   def save_out_image():
-      global window, out_h, out_w, out_image
-      if is_empty_image():
-         return
-
-      savefp = tkinter.filedialog.asksaveasfile(
-         parent=window,
-         mode='wb',
-         defaultextension='*.raw',
-         filetypes=(('RAW file', '*.raw'), ('All file', '*.*')),
-      )
-      if is_save_file(savefp):
-         return
-
-      status.configure(text=f'Image is being saved at {savefp.name}')
-      for i in range(out_h):
-         for j in range(out_w):
-               savefp.write(struct.pack('B', out_image[i][j]))
-      status.configure(text=f'Image is saved at {savefp.name}')
-      savefp.close()
-
-
-   # ========== Vision Algorithm(1.01) ==========
    # bright control(+/-)
    def add_image():
       global in_image, out_image
       if is_empty_image():
          return
-      out_image = in_image
+      equal_image()
 
       value = tkinter.simpledialog.askinteger(
          'bright +/-',
@@ -286,17 +288,19 @@
       out_image = out_image.astype(np.int16) + value
       out_image = np.where(out_image > 255, 255, out_image)
       out_image = np.where(out_image < 0, 0, out_image)
+
       display_out_image()
 
 
-   # reverse image
-   def rev_image():
+   # contrast image
+   def contrast_image():
       global in_image, out_image
       if is_empty_image():
          return
-      out_image = in_image
+      equal_image()
 
       out_image = 255 - out_image
+
       display_out_image()
 
 
@@ -305,12 +309,13 @@
       global in_image, out_image
       if is_empty_image():
          return
-      out_image = in_image
+      equal_image()
 
       x = np.array([i for i in range(256)])
       LUT = 255 - 255 * np.power(x / 128 -1, 2)
       LUT = LUT.astype(np.uint8)
       out_image = LUT[out_image]
+
       display_out_image()
 
 
@@ -319,24 +324,25 @@
       global in_image, out_image
       if is_empty_image():
          return
-      out_image = in_image
+      equal_image()
 
       avg = np.average(out_image)
       out_image = np.where(out_image > avg, 255, 0)
+
       display_out_image()
 
 
    # ========== Vision Algorithm(1.02) ==========
    # Move Display
    def move_image():
-      global panYN, canvas2
-      panYN = True
+      global pan_yn, canvas2
+      pan_yn = True
       canvas2.configure(cursor='mouse')
 
 
    def mouse_click(event):
-      global sx, sy, ex, ey, panYN
-      if not panYN:
+      global sx, sy, ex, ey, pan_yn
+      if not pan_yn:
          return
       sx = event.x
       sy = event.y
@@ -344,8 +350,8 @@
 
    def mouse_drop(event):
       global in_h, in_w, in_image, out_image
-      global sx, sy, ex, ey, panYN
-      if not panYN:
+      global sx, sy, ex, ey, pan_yn
+      if not pan_yn:
          return
       out_image = malloc(in_h, in_w, 255)
       mx = event.x - sx
@@ -358,6 +364,8 @@
          out_image[my:in_h, 0:in_w+mx] = in_image[0:in_h-my, -1*(mx):in_w]
       elif mx <= 0 and my <= 0:
          out_image[0:in_h+my, 0:in_w+mx] = in_image[-1*(my):in_h, -1*(mx):in_w]
+      pan_yn = False
+
       display_out_image()
 
 
@@ -366,9 +374,9 @@
       global in_image, out_image
       if is_empty_image():
          return
-      out_image = in_image
-
+      equal_image()
       out_image = np.flip(in_image, axis=0)
+
       display_out_image()
 
 
@@ -380,10 +388,32 @@
       pass
    # zoom-out
    def zoom_out_image():
-      pass
+      global in_h, in_w, in_image, out_h, out_w, out_image
+      scale = tkinter.simpledialog.askinteger(
+         'zoom_out','(2~16)', minvalue=2, maxvalue=16)
+      out_h = in_h // scale
+      out_w = in_w // scale
+      out_image = in_image[::scale, ::scale]
+
+      display_out_image()
+      out_h = in_h
+      out_w = in_w
+
+
    # zoom-in
    def zoom_in_image():
-      pass
+      global in_h, in_w, in_image, out_h, out_w, out_image
+      scale = tkinter.simpledialog.askinteger(
+         'zoom_in', '(2~16)', minvalue=2, maxvalue=16)
+      out_h = int(in_h * scale)
+      out_w = int(in_w * scale)
+      out_image = np.kron(in_image, np.ones((scale, scale)))
+
+      display_out_image()
+      out_h = in_h
+      out_w = in_w
+
+
    # rotate
    def rotate_image():
       pass
@@ -482,13 +512,13 @@
       comvision_menu1 = tk.Menu(main_menu)
       main_menu.add_cascade(label='Pixel', menu=comvision_menu1)
       comvision_menu1.add_command(label='Brighten/Darken', command=add_image)
-      comvision_menu1.add_command(label='Contrast', command=rev_image)
+      comvision_menu1.add_command(label='Contrast', command=contrast_image)
       comvision_menu1.add_command(label='Parabola', command=para_image)
       comvision_menu1.add_separator()
       comvision_menu1.add_command(label="Morphing_image", command=morph_image)
 
       comvision_menu2 = tk.Menu(main_menu)
-      main_menu.add_cascade(label='Geometry', menu=comvision_menu2)
+      main_menu.add_cascade(label='Statistics', menu=comvision_menu2)
       comvision_menu2.add_command(label='Black&White', command=bw_image)
       comvision_menu2.add_command(label='Zoom_out(better)', command=zoom_out_image2)
       comvision_menu2.add_command(label='Zoom_in(better)', command=zoom_in_image2)
@@ -529,6 +559,7 @@
       comvision_menu5.add_command(label='Save as Excel Art', command=save_as_excel_art)
       comvision_menu5.add_command(label='Open Excel file', command=open_excel)
 
+      open_image()
       window.mainloop()
 
    ```
