@@ -1,23 +1,34 @@
+import csv
+import datetime
 import math
 import os
+import random
 import struct
+import tempfile
+import threading
+import time
 import tkinter.filedialog
 import tkinter.messagebox
 import tkinter.simpledialog
 import tkinter as tk
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
+import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+import pymysql
+import xlrd
+import xlsxwriter
+
 
 # ==================== Global Variable ====================
 window, canvas1, canvas2, paper1, paper2 = [None] * 5
-file_name = ''
 in_h, in_w, in_image = 0, 0, []
 out_h, out_w, out_image = 0, 0, []
+file_name = ''
 VIEW_X, VIEW_Y = 512, 512
 R, G, B = 0, 1, 2
 # ========== Mouse Event ==========
-panYN = False
+pan_yn = False
 sx, sy, ex, ey = [0] * 4
 # ========== Mask Value ==========
 # embossing mask(0)
@@ -55,7 +66,8 @@ low_freq = [
     [1/9, 1/9, 1/9],
     [1/9, 1/9, 1/9],
     [1/9, 1/9, 1/9]]
-mask_list = [embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
+mask_list = [
+    embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
 # ========== Server default ==========
 IP_ADDR = '192.168.111.10'
 USER_NAME = 'root'
@@ -67,54 +79,58 @@ raw_file_list = []
 
 # ==================== Function Declaration ====================
 # ========== Bug Check ==========
-def is_open_file(fname):
-    if not fname:
+def is_open_file(file_name):
+    if not file_name:
         status.configure(text='Open is failed. Please try again')
-        return True
-    return False
+        return False
+    return True
 
 
-def is_save_file(fname):
-    if not fname:
+def is_save_file(file_name):
+    if not file_name:
         status.configure(text=f'Save is failed. Please try again')
-        return True
-    return False
+        return False
+    return True
 
 
 def is_empty_image():
     global out_image
     if len(out_image) == 0:
-        tkinter.messagebox.showinfo(title='Error',
+        tkinter.messagebox.showinfo(
+            title='Error',
             message='The image is empty, Please open image')
         return True
     return False
 
+
 # ========== file I/O ==========
 # memory allocation
-def malloc(h, w, initvalue=0, datatype=np.uint8):
+def malloc(h, w, initvalue=0):
     ret_memory = [[initvalue for _ in range(w)] for _ in range(h)]
     return ret_memory
-    
+
 
 # open image
 def open_image():
     global window, file_name
     file_name = tkinter.filedialog.askopenfilename(
         parent=window,
-        filetypes=(('Color file', '*.jpg;*.png;*.bmp;*.tif'), ('All file', '*.*')),
+        filetypes=(('Color file', '*.jpg;*.png;*.bmp;*.gif;*.tif'), ('All file', '*.*')),
     )
-    if is_open_file(file_name):
+    if not is_open_file(file_name):
         return
 
     load_image(file_name)
     equal_image()
+    display_new_image()
 
 
 # load image
-def load_image(fname):
+def load_image(file_name):
     global in_h, in_w, in_image
     in_image = []
-    photo = Image.open(fname)  # PIL 객체 생성
+    # PIL 객체 생성
+    photo = Image.open(file_name)
     in_h = photo.height
     in_w = photo.width
 
@@ -146,17 +162,17 @@ def display_new_image():
     canvas1.pack(expand=1, side=tk.LEFT)
     canvas2.pack(expand=1, side=tk.RIGHT)
 
-    step_X, step_Y = 1, 1
+    step_x, step_y = 1, 1
     if in_h > VIEW_Y:
-        step_Y = in_h / VIEW_Y
+        step_y = in_h / VIEW_Y
     if in_w > VIEW_X:
-        step_X = in_w / VIEW_X
+        step_x = in_w / VIEW_X
 
     rgb_str = ''
-    for i in np.arange(0, in_h, step_Y):
+    for i in np.arange(0, in_h, step_y):
+        i = int(i)
         tmp_str = ''
-        for j in np.arange(0, in_w, step_X):
-            i = int(i)
+        for j in np.arange(0, in_w, step_x):
             j = int(j)
             r, g, b = in_image[R][i][j], in_image[G][i][j], in_image[B][i][j]
             tmp_str += f' #{r:02x}{g:02x}{b:02x}'
@@ -177,17 +193,17 @@ def display_out_image():
     paper2 = tk.PhotoImage(height=out_h, width=out_w)
     canvas2.create_image((out_h//2, out_w//2), image=paper2, anchor=tk.CENTER)
     
-    step_X, step_Y = 1, 1
+    step_x, step_y = 1, 1
     if out_h > VIEW_Y:
-        step_Y = out_h / VIEW_Y
+        step_y = out_h / VIEW_Y
     if out_w > VIEW_X:
-        step_X = out_w / VIEW_X
+        step_x = out_w / VIEW_X
 
     rgb_str = ''
-    for i in np.arange(0, out_h, step_Y):
+    for i in np.arange(0, out_h, step_y):
+        i = int(i)
         tmp_str = ''
-        for j in np.arange(0, out_w, step_X):
-            i = int(i)
+        for j in np.arange(0, out_w, step_x):
             j = int(j)
             r, g, b = out_image[R][i][j], out_image[G][i][j], out_image[B][i][j]
             tmp_str += f' #{r:02x}{g:02x}{b:02x}'
@@ -200,10 +216,42 @@ def display_out_image():
 
     status.configure(
         text=(f'Image is opened from ({file_name}) '
-              f'{in_h}x{in_w}, Out image is printed {out_h}x{out_w}')
+            f'{in_h}x{in_w}, Out image is printed {out_h}x{out_w}')
     )
 
 
+# save image
+def save_out_image():
+    global out_h, out_w, out_image, window
+    if is_empty_image():
+        return
+    out_array = []
+    for i in range(out_h):
+        tmp = []
+        for j in range(out_w):
+            tup = tuple([out_image[R][i][j], out_image[G][i][j],out_image[B][i][j],])
+            tmp.append(tup)
+        out_array.append(tmp)
+    
+    out_array = np.array(out_array)
+    save_photo = Image.fromarray(out_array.astype(np.uint8), 'RGB')
+
+    save_fp = tkinter.filedialog.asksaveasfile(
+        parent=window,
+        mode='wb',
+        defaultextension='*.jpg',
+        filetypes=(('JPG file', '*.jpg'), ('All file', '*.*')),
+    )
+    if not is_save_file(save_fp):
+        return
+
+    status.configure(text=f'Image is being saved at {save_fp.name}')
+    save_photo.save(save_fp.name)
+    status.configure(text=f'Image is saved at {save_fp.name}')
+    save_fp.close()
+
+
+# ========== Vision Algorithm(1.01) ==========
 # equal image
 def equal_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
@@ -219,46 +267,14 @@ def equal_image():
             for j in range(out_w):
                 out_image[RGB][i][j] = in_image[RGB][i][j]
 
-    display_new_image()
 
-
-# save image
-def save_out_image():
-    global window, out_h, out_w, out_image
-    if is_empty_image():
-        return
-    out_array = []
-    for i in range(out_h):
-        tmp = []
-        for j in range(out_w):
-            tup = tuple([out_image[R][i][j], out_image[G][i][j],out_image[B][i][j],])
-            tmp.append(tup)
-        out_array.append(tmp)
-    
-    out_array = np.array(out_array)
-    save_photo = Image.fromarray(out_array.astype(np.uint8), 'RGB')
-
-    savefp = tkinter.filedialog.asksaveasfile(
-        parent=window,
-        mode='wb',
-        defaultextension='*.jpg',
-        filetypes=(('JPG file', '*.jpg'), ('All file', '*.*')),
-    )
-    if is_save_file(savefp):
-        return
-        
-    status.configure(text=f'Image is being saved at {savefp.name}')
-    save_photo.save(savefp.name)
-    status.configure(text=f'Image is saved at {savefp.name}')
-    savefp.close()
-
-
-# ========== Vision Algorithm(1.01) ==========
 # bright control(+/-)
 def add_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
         return
+    equal_image()
+
     value = tkinter.simpledialog.askinteger(
         'bright +/-',
         'add (-255~255)',
@@ -279,9 +295,12 @@ def add_image():
     display_out_image()
 
 
-# contrast image
-def contrast_image():
+# invert image
+def invert_image():
     global in_h, in_w, in_image, out_image
+    if is_empty_image():
+        return
+    equal_image()
 
     for RGB in range(3):
         for i in range(in_h):
@@ -290,8 +309,13 @@ def contrast_image():
 
     display_out_image()
 
-# para image
+
+# parabola image
 def para_image():
+    if is_empty_image():
+        return
+    equal_image()
+
     global in_h, in_w, in_image, out_image
     LUT = [0 for _ in range(256)]
     for value in range(256):
@@ -304,21 +328,40 @@ def para_image():
 
     display_out_image()
 
+
+# black & white image
+def bw_image():
+    pass
 # ========== Vision Algorithm(1.02) ==========
 # Move Display
 def move_image():
-    pass
+    global pan_yn, canvas2
+    if is_empty_image():
+        return
+    equal_image()
+
+    display_out_image()
+    pan_yn = True
+    canvas2.configure(cursor='mouse')
+
+
 def mouse_click(event):
-    pass
+    global sx, sy, ex, ey, pan_yn
+    if not pan_yn:
+        return
+    sx = event.x
+    sy = event.y
+
+
 def mouse_drop(event):
     pass
 # upside-down
 def up_down_image():
     pass
-# zoom-out(평균변환)
+# zoom-out(image averaging)
 def zoom_out_image2():
     pass
-# zoom-in(양선형 보간)
+# zoom-in(bilinear interpolation)
 def zoom_in_image2():
     pass
 # zoom-out
@@ -344,18 +387,17 @@ def equalize_image():
     pass
 # ========== Vision Algorithm(1.02) Endline ==========
 # ========== Vision Algorithm(1.03) ==========
-# Mask Processing
-def mask_image(num=0):
+# mask processing
+def mask_image(mask_number=0):
     pass
-
 # ========== Vision Algorithm(1.03) Endline ==========
 # ========== Vision Algorithm(1.04) ==========
-# morph image
+# morphing image
 def morph_image():
     pass
 # ========== Vision Algorithm(1.04) Endline ==========
 # ========== Vision Algorithm(1.05) ==========
-# histogram_custom
+# histogram custom
 def histogram_image_custom():
     pass
 # ========== Vision Algorithm(1.05) Endline ==========
@@ -364,7 +406,7 @@ def histogram_image_custom():
 def save_out_image_at_temp():
     pass
 # Get avg, max, min
-def status():
+def find_state():
     pass
 # upload to mysql
 def upload_mysql():
@@ -381,7 +423,7 @@ def save_as_csv():
 def open_csv():
     pass
 # load csv
-def load_csv(fname):
+def load_csv(file_name):
     pass
 # ========== Vision Algorithm(1.07) Endline ==========
 # ========== Vision Algorithm(1.08) ==========
@@ -395,7 +437,7 @@ def save_as_excel_art():
 def open_excel():
     pass
 # load excel
-def load_excel(fname):
+def load_excel(file_name):
     pass
 # ========== Vision Algorithm(1.08) Endline ==========
 
@@ -426,52 +468,52 @@ if __name__ == '__main__':
     comvision_menu1 = tk.Menu(main_menu)
     main_menu.add_cascade(label='Pixel', menu=comvision_menu1)
     comvision_menu1.add_command(label='Brighten/Darken', command=add_image)
-    comvision_menu1.add_command(label='Contrast', command=contrast_image)
+    comvision_menu1.add_command(label='Invert', command=invert_image)
     comvision_menu1.add_command(label='Parabola', command=para_image)
     comvision_menu1.add_separator()
     comvision_menu1.add_command(label="Morphing_image", command=morph_image)
 
     comvision_menu2 = tk.Menu(main_menu)
     main_menu.add_cascade(label='Statistics', menu=comvision_menu2)
-    # comvision_menu2.add_command(label='Black&White', command=bw_image)
-    # comvision_menu2.add_command(label='Zoom_out(better)', command=zoom_out_image2)
-    # comvision_menu2.add_command(label='Zoom_in(better)', command=zoom_in_image2)
-    # comvision_menu2.add_separator()
-    # comvision_menu2.add_command(label='Histogram', command=histogram_image)
-    # comvision_menu2.add_command(label='Histogram_custom', command=histogram_image_custom)
-    # comvision_menu2.add_command(label='Stretch', command=stretch_image)
-    # comvision_menu2.add_command(label='End_In', command=end_in_image)
-    # comvision_menu2.add_command(label='Equalize', command=equalize_image)
+    comvision_menu2.add_command(label='Black&White', command=bw_image)
+    comvision_menu2.add_command(label='Zoom_out(better)', command=zoom_out_image2)
+    comvision_menu2.add_command(label='Zoom_in(better)', command=zoom_in_image2)
+    comvision_menu2.add_separator()
+    comvision_menu2.add_command(label='Histogram', command=histogram_image)
+    comvision_menu2.add_command(label='Histogram_custom', command=histogram_image_custom)
+    comvision_menu2.add_command(label='Stretch', command=stretch_image)
+    comvision_menu2.add_command(label='End_In', command=end_in_image)
+    comvision_menu2.add_command(label='Equalize', command=equalize_image)
 
     comvision_menu3 = tk.Menu(main_menu)
     main_menu.add_cascade(label='Geometry', menu=comvision_menu3)
-    # comvision_menu3.add_command(label='Up_Down', command=up_down_image)
-    # comvision_menu3.add_command(label='Move', command=move_image)
-    # comvision_menu3.add_command(label='Zoom_out', command=zoom_out_image)
-    # comvision_menu3.add_command(label='Zoom_in', command=zoom_in_image)
-    # comvision_menu3.add_command(label='Rotate', command=rotate_image)
+    comvision_menu3.add_command(label='Up_Down', command=up_down_image)
+    comvision_menu3.add_command(label='Move', command=move_image)
+    comvision_menu3.add_command(label='Zoom_out', command=zoom_out_image)
+    comvision_menu3.add_command(label='Zoom_in', command=zoom_in_image)
+    comvision_menu3.add_command(label='Rotate', command=rotate_image)
 
     comvision_menu4 = tk.Menu(main_menu)
-    # main_menu.add_cascade(label='Area', menu=comvision_menu4)
-    # comvision_menu4.add_command(label='Embossing', command=lambda: mask_image(0))
-    # comvision_menu4.add_command(label='Blurring', command=lambda: mask_image(1))
-    # comvision_menu4.add_command(label='Sharpening', command=lambda: mask_image(2))
-    # comvision_menu4.add_command(label='Edge detect', command=lambda: mask_image(3))
-    # comvision_menu4.add_command(label='Gaussian', command=lambda: mask_image(4))
-    # comvision_menu4.add_command(label='High freq', command=lambda: mask_image(5))
-    # comvision_menu4.add_command(label='Low freq', command=lambda: mask_image(6))
+    main_menu.add_cascade(label='Area', menu=comvision_menu4)
+    comvision_menu4.add_command(label='Embossing', command=lambda: mask_image(0))
+    comvision_menu4.add_command(label='Blurring', command=lambda: mask_image(1))
+    comvision_menu4.add_command(label='Sharpening', command=lambda: mask_image(2))
+    comvision_menu4.add_command(label='Edge detect', command=lambda: mask_image(3))
+    comvision_menu4.add_command(label='Gaussian', command=lambda: mask_image(4))
+    comvision_menu4.add_command(label='High freq', command=lambda: mask_image(5))
+    comvision_menu4.add_command(label='Low freq', command=lambda: mask_image(6))
 
     comvision_menu5 = tk.Menu(main_menu)
     main_menu.add_cascade(label='Format', menu=comvision_menu5)
-    # comvision_menu5.add_command(label='Upload in MySQL', command=upload_mysql)
-    # comvision_menu5.add_command(label='Download from MySQL', command=download_mysql)
-    # comvision_menu5.add_separator()
-    # comvision_menu5.add_command(label='Save as CSV file', command=save_as_csv)
-    # comvision_menu5.add_command(label='Open CSV file', command=open_csv)
-    # comvision_menu5.add_separator()
-    # comvision_menu5.add_command(label='Save as Excel file', command=save_as_excel)
-    # comvision_menu5.add_command(label='Save as Excel Art', command=save_as_excel_art)
-    # comvision_menu5.add_command(label='Open Excel file', command=open_excel)
+    comvision_menu5.add_command(label='Upload in MySQL', command=upload_mysql)
+    comvision_menu5.add_command(label='Download from MySQL', command=download_mysql)
+    comvision_menu5.add_separator()
+    comvision_menu5.add_command(label='Save as CSV file', command=save_as_csv)
+    comvision_menu5.add_command(label='Open CSV file', command=open_csv)
+    comvision_menu5.add_separator()
+    comvision_menu5.add_command(label='Save as Excel file', command=save_as_excel)
+    comvision_menu5.add_command(label='Save as Excel Art', command=save_as_excel_art)
+    comvision_menu5.add_command(label='Open Excel file', command=open_excel)
 
     open_image()
     window.mainloop()

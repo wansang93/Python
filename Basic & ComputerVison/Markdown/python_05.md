@@ -1,4 +1,4 @@
-#  05일차 파이썬 기본문법 160611
+# 05일차 파이썬 기본문법 160611
 
 ## 파이썬
 
@@ -9,13 +9,14 @@
 Binary 파일은 각 회사의 노하우가 들어서 byte단위를 끊는 방식이 재각각이다.
 
 이미지 확장자
-  - `bmp`: 하나하나 표현한 파일로 용량이 크다 -> 웹에서는 jpg, jpeg로 대체했다.
-  - `jpg`, `jpeg`: 손실 압축된 파일(버리면서 압축한 파일, 복귀 x)
-  - `png`: jpg를 만든 회사에서 저작권료를 받으려 해서 나온 파일 확장자
-    
-    결국 jpg는 저작권료를 받지 않게 바꿨다.
 
-  - `Tiff`, `Tif`: 손실없는 압축파일, 영상처리에서 가장 많이 쓴다.
+- `bmp`: 하나하나 표현한 파일로 용량이 크다 -> 웹에서는 jpg, jpeg로 대체했다.
+- `jpg`, `jpeg`: 손실 압축된 파일(버리면서 압축한 파일, 복귀 x)
+- `png`: jpg를 만든 회사에서 저작권료를 받으려 해서 나온 파일 확장자
+
+결국 jpg는 저작권료를 받지 않게 바꿨다.
+
+- `Tiff`, `Tif`: 손실없는 압축파일, 영상처리에서 가장 많이 쓴다.
 
 `콜백함수`는 이벤트가 발생했을 때 실행하게 설정한 함수이다.
 
@@ -38,7 +39,6 @@ os.path.split(f_name)  # 파일명
 os.path.splitext(f_name)[1]  # 확장자명
 ```
 
-
 ### 책 : 파이썬 for Beginner
 
 #### 10장 - 윈도 프로그래밍
@@ -47,15 +47,16 @@ os.path.splitext(f_name)[1]  # 확장자명
 
 1. 기본 위젯 활용
 
-    * 기본 윈도창의 구성
-        ```python
-        import tkinter as tk
-        window = tk.Tk()
-        window.geometry('500x500')
-        window.resizable(width=True, height=False)
+   - 기본 윈도창의 구성
 
-        window.mainloop()
-        ```
+     ```python
+     import tkinter as tk
+     window = tk.Tk()
+     window.geometry('500x500')
+     window.resizable(width=True, height=False)
+
+     window.mainloop()
+     ```
 
 #### 11장 - 파일 입출력
 
@@ -199,6 +200,7 @@ os.path.splitext(f_name)[1]  # 확장자명
 
         window.mainloop()
     ```
+
 - 05-05 파일목록
 
     ``` python
@@ -363,6 +365,7 @@ os.path.splitext(f_name)[1]  # 확장자명
     ```
 
 - 05-08 미션2 뷰어 확대, 축소
+
     ``` python
     import tkinter as tk
     import tkinter.filedialog
@@ -508,8 +511,8 @@ os.path.splitext(f_name)[1]  # 확장자명
         window.mainloop()
     ```
 
-
 - 05-10 퀴즈 뷰어만들기
+
     ``` python
     import tkinter as tk
 

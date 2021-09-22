@@ -2,46 +2,39 @@
 
 ## DataBase
 
-* Data : 처리되기 전의 자료
-
-* Table : Data를 편리하게 관리하기 위해 Table을 사용, Table은 하나의 표라고 생각하면 편함
-
-   * 열 : 열, column, field로 불리고 주로 정보를 나타냄 ex) ID, 이름, 나이, 주소 등
-
-   * 행 : 행, row, record로 불리고 하나의 행은 한 Data의 정보를 나타냄 
+- Data : 처리되기 전의 자료
+- Table : Data를 편리하게 관리하기 위해 Table을 사용, Table은 하나의 표라고 생각하면 편함
+  - 열 : 열, column, field로 불리고 주로 정보를 나타냄 ex) ID, 이름, 나이, 주소 등
+  - 행 : 행, row, record로 불리고 하나의 행은 한 Data의 정보를 나타냄
 
       | ID   | 이름   | 주소 |
       | ---- | ------ | ---- |
       | wans | 김완상 | 고양 |
       | hong | 홍길동 | 강남 |
 
-      테이블에는 기본적으로 기본키를 지정해 주면 관리하기 편하다. 
+      테이블에는 기본적으로 기본키를 지정해 주면 관리하기 편하다.
 
       보통 기본키는 NOT_NULL로 설정하고 Unique한 값으로 정해주고 하나만 정해준다.
 
       ex) 학번, 주민번호, 회원번호, ID 등등
 
-* Database : Table을 데이터 저장소에 넣음 데이터 저장소가 Database임, 모양은 원통모양
-
-* DBMS : Database를 컴퓨터에서 관리하기위한 소프트웨어 ex) Oracle, MySQL, MariaDB, SSMS 등
-
-   * 데이터를 조작하기 위해서는 Insert(삽입), Update(업데이트), Delete(삭제)를 해야한다. 또 이것을 선택(Select)해서 따로 추출, 조회, 조작, 수정등을 할 수 있다.
+- Database : Table을 데이터 저장소에 넣음 데이터 저장소가 Database임, 모양은 원통모양
+- DBMS : Database를 컴퓨터에서 관리하기위한 소프트웨어 ex) Oracle, MySQL, MariaDB, SSMS 등
+  - 데이터를 조작하기 위해서는 Insert(삽입), Update(업데이트), Delete(삭제)를 해야한다. 또 이것을 선택(Select)해서 따로 추출, 조회, 조작, 수정등을 할 수 있다.
 
 ### SQL로 Database 구축하기
 
 > SQL(Structured Query Language) is a standard computer language for relational database management and data manipulation.
 
-* 1단계 : DBMS 설치
-
-* 2단계 : 데이터 베이스 구축
-
-  * 데이터 베이스 생성
+- 1단계 : DBMS 설치
+- 2단계 : 데이터 베이스 구축
+  - 데이터 베이스 생성
   
       ```mysql
       CREATE DATABASE samsongDB;
       ```
   
-  * 테이블 생성
+  - 테이블 생성
   
       ```mysql
       USE samsongDB;
@@ -54,14 +47,14 @@
       > SMALLINT와 INT의 차이
       >
       > SMALLINT : 2bit(-32,768~32,767), INT : 4bit(약 -21억 4700만에서 21억 4700만)
-  
+      >
       > VARCHAR와 CHAR의 차이
       >
       > 동적으로 글자수를 잡아 공간낭비가 없음, 하지만 불러오는 속도에서는 차이가 있음
       >
       > 하지만 또 Oracle에서 속도차이가 없게 만들었고 다른 DBMS는 속도차이가 조금 있을 수 있음
   
-  * 데이터 입력
+  - 데이터 입력
   
       ```mysql
       -- 실무에서는 이렇게 작성
@@ -79,9 +72,9 @@
   
       > COMMIT은 INSERT한 것을 저장한다는 개념이다. 반대되는 단어는 ROLLBACK 이다.
   
-* 3단계 : 응용 프로그램에서 구축된 데이터 활용
+- 3단계 : 응용 프로그램에서 구축된 데이터 활용
 
-  * 데이터 조회 및 활용
+  - 데이터 조회 및 활용
   
       ```mysql
       -- 실무에서는 SELECT 전체(*)를 하는것보다 원하는 값을 치는것을 권유함
@@ -99,20 +92,17 @@
 
 ### 선생님 파이썬 코딩 팁
 
-* 코딩할 때 주석을 많이 달고 범용적으로 코딩하면 좋다.
+- 코딩할 때 주석을 많이 달고 범용적으로 코딩하면 좋다.
+- 함수부분, 전역변수부분, 메인코드부분으로 나눠서 코딩하면 좋다.
+- 파이썬처럼 프로그래밍해도 되고 다른언어처럼 코딩하면 다른언어 사용자가 이해하기 쉽다.
+  - Python Enhance Proposal-8(PEP-8) : 파이썬에서 코딩할 때 공통적으로 지키자는 룰을 만들었다.
+  - Google Java Style Guide : 구글에서 코딩할 때 스타일을 가이드 한 것이다.
 
-* 함수부분, 전역변수부분, 메인코드부분으로 나눠서 코딩하면 좋다.
-
-* 파이썬처럼 프로그래밍해도 되고 다른언어처럼 코딩하면 다른언어 사용자가 이해하기 쉽다.
-
-  * Python Enhance Proposal-8(PEP-8) : 파이썬에서 코딩할 때 공통적으로 지키자는 룰을 만들었다.
-  * Google Java Style Guide : 구글에서 코딩할 때 스타일을 가이드 한 것이다.
-
-###  책 : 파이썬 for Beginner
+### 책 : 파이썬 for Beginner
 
 #### 13장 - 데이터베이스
 
-* SQLite Data 입력
+- SQLite Data 입력
 
   ``` python
   import sqlite3
@@ -135,7 +125,7 @@
   
   ```
 
-* SQLite Data 조회
+- SQLite Data 조회
 
   ``` python
   import sqlite3
@@ -164,10 +154,9 @@
   >
   > 한번에 어려개를 가져오면 코딩은 쉬우나 메모리나 시스템적으로 오류가 발생할 가능성이 있다.
 
-
 #### 2장 - 미리 만드는 쓸만한 프로그램
 
-* print(), input() 함수 사용과 %d, %f
+- print(), input() 함수 사용과 %d, %f
 
   ``` python
   print("Hello World")  # 화면에 출력
@@ -189,7 +178,7 @@
 
 1. print() 를 사용한 다양한 출력
 
-   * format을 활용한 함수 출력
+   - format을 활용한 함수 출력
 
      ``` python
      print("{0:d} {1:5d} \n".format(100, 200))  
@@ -203,7 +192,7 @@
      >
      > "-" 라는 문자열을 50번 반복하고 마지막에 _df를 출력해라
 
-   * 문자열에서 \를 치면 escape characters(특수한 동작)가 실행된다.
+   - 문자열에서 \를 치면 escape characters(특수한 동작)가 실행된다.
 
      ``` python
      print("\n, \t, \b \\, \"")
@@ -229,20 +218,20 @@
 
    2. 변수명 규칙
 
-      변수명에는 영문자(대소문자는 구분), 한글,  숫자를 사용, <u>특수문자는 사용 불가</u>하다.
+      변수명에는 영문자(대소문자는 구분), 한글,  숫자를 사용, **특수문자는 사용 불가**하다.
 
-      <u>첫자리에 숫자는 사용 불가</u>하다.
+      **첫자리에 숫자는 사용 불가**하다.
 
-      <u>파이썬 키워드는 변수명으로 사용불가</u>하다.
+      **파이썬 키워드는 변수명으로 사용불가**하다.
 
       > and, as, assert, break, class, continue, def, del, False, if, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, Ture, try, while, with, yield
 
    3. 변수 삭제하기
 
       파이썬은 동적 프로토타이핑 언어인만큼 한번 값이 대입된 변수는 프로그램이 종료될때까지 유지될 가능성이 크다.
-      
+
       물론 함수등 특정 범위내에서만 동작하고 그 함수에서 빠져나오면 사라진다.
-      
+
       하지만 프로그래머의 의도에 따라 강제로 변수를 삭제할 수도 있다.
 
       ``` python
@@ -312,4 +301,3 @@
 
 - Windows Server의 MariaDB or MySQL에 p.423 구현
 - SQL Server에 p.423 구현
-

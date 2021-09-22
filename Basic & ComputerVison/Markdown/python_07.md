@@ -78,7 +78,7 @@ paper.put(rgb_str)
 canvas.bind('<Button-1>', mouse_click)
 canvas.bind('<ButtonRelease-1>', mouse_drop)
 canvas.pack(expand=1, anchor=tk.CENTER)
-``` 
+```
 
 ``` python
 # ==================== Function Declaration ====================

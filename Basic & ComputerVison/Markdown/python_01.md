@@ -18,33 +18,29 @@ Virtual Box란 가상머신을 돌리기 위한 하나의 툴 입니다. Vmware,
 
 #### Windows Server 2016 [Windows Server 2016 링크](<https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2016?filetype=ISO>)
 
-* 머신을 링크를 받아 파일 저장
+- 머신을 링크를 받아 파일 저장
+- 아래 이미지를 따라서 가상 머신 만들기
 
-* 아래 이미지를 따라서 가상 머신 만들기
+  ![image1-3](./img_day1/3.png)
 
-  ![](./img_day1/3.png)
+- 광학 드라이브를 클릭하여 이전에 저장한 파일(Windows Server 2016) 불러오기
 
-* 광학 드라이브를 클릭하여 이전에 저장한 파일(Windows Server 2016) 불러오기
+  ![image1-4](./img_day1/4.png)
 
-  ![](./img_day1/4.png)
+- 불러와서 Windows Server 2016 설치 후 종료
+- 공유 폴더 설정
 
-* 불러와서 Windows Server 2016 설치 후 종료
-
-* 공유 폴더 설정
-
-  ![](./img_day1/2.png)
+  ![image1-2](./img_day1/2.png)
 
 #### Linux(Fedora 22)
 
 - Virtual Box 에서 Fedora에 MySQL설치 연결 후 로그인 후 네트워크 확인해보기
-
 - Virtual Box 에서 Fedora에 MySQL설치 연결 후 로그인 후 네트워크 확인해보기
-
   - local host login : **`root`**
   - password : **`password`**
   - **`ip addr`** 네트워크 상태 확인
 
-  ![](./img_day1/1.png)
+  ![image1-1](./img_day1/1.png)
 
 ### 2. MySQL [MySQL 링크](<https://dev.mysql.com/downloads/mysql/>)
 
@@ -56,9 +52,9 @@ MariaDB 는 MySQL이 Oracle로 인수되면서 MySQL에 몇몇 개발자들이 �
 
 ### 4. HeidiSQL [HeidiSQL 링크](<https://www.heidisql.com/download.php>)
 
-실무에서는 SQL Server Management Studio(SSMS)를 사용하지만 우리는 가벼운 프로그램을 받기위해서 
+실무에서는 SQL Server Management Studio(SSMS)를 사용하지만 우리는 가벼운 프로그램을 받기위해서
 
-Quary Language만 보내기 위해  가벼운 프로그램인 HeidiSQL을 받아서 사용합니다.
+Quary Language만 보내기 위해 가벼운 프로그램인 HeidiSQL을 받아서 사용합니다.
 
 ### 5. SQL Server 2019 [SQL Server 2019 링크](<https://www.microsoft.com/en-us/evalcenter/evaluate-sql-server-2019-ctp>)
 
@@ -78,11 +74,9 @@ IBM컴퓨터의 운영체제를 Microsoft를 사용, Microsoft가 성장 후 운
 
 16bit는 가정용 32bit는 기업용으로 초기에 제작하였다. 컴퓨터가 발전하면서 XP 이후로는 통일하였다. 기술이 더 발전하며 현재는 32bit와 64bit 체제를 같이 이용한다.
 
-* **16bit** : DOS(Disk Operating System) -> W3.1 -> W95 -> W98 -> ME -> XP(Home)
-* **32bit** : NT(New Technology) 프로잭트(Unix 표준으로 windows 시스템으로 만듬) -> NT3.51 -> NT4.0 -> W2000 -> XP
-* **64bit** : Vista -> W7 -> W8 ->W8.1 ->W10
-
-
+- **16bit** : DOS(Disk Operating System) -> W3.1 -> W95 -> W98 -> ME -> XP(Home)
+- **32bit** : NT(New Technology) 프로잭트(Unix 표준으로 windows 시스템으로 만듬) -> NT3.51 -> NT4.0 -> W2000 -> XP
+- **64bit** : Vista -> W7 -> W8 ->W8.1 ->W10
 
 | 32bit       | 64bit  |
 | ----------- | ------ |
@@ -93,9 +87,9 @@ IBM컴퓨터의 운영체제를 Microsoft를 사용, Microsoft가 성장 후 운
 
 Vista부터는 32bit 와 64bit를 같이 출시였는데 호환성 때문에 32bit를 지원하였다.
 
-<u>햇갈리게 32bit는 왜 x86을 쓸까요?</u>: 초기에 intel 32bit 이하계열 칩셋 제품명이 80-86 숫자를 붙였기 때문에 
+**햇갈리게 32bit는 왜 x86을 쓸까요?**: 초기에 intel 32bit 이하계열 칩셋 제품명이 80-86 숫자를 붙였기 때문에
 
-<u>32bit CPU 를 쓰면 안되는 이유</u>:  RAM을 기본 3GB 밖에 사용하지 못함 예전에는 RAM의 용량이 커질지 몰랐음
+**32bit CPU 를 쓰면 안되는 이유**: RAM을 기본 3GB 밖에 사용하지 못함, 예전에는 RAM의 용량이 커질지 몰랐음, 호환되는 프로그램이 적음
 
 ### 오픈소스 버전 종류
 
@@ -106,5 +100,3 @@ Vista부터는 32bit 와 64bit를 같이 출시였는데 호환성 때문에 32b
 오픈소스 버전은 잘 안올립니다. 이유는? 버전 업데이트란 기대감도 커지기 때문에 그래서 소수자리를 올립니다.
 
 오픈소스는 0으로 시작해서 0.01, 0.02 등으로 업데이트 하고 크게 바뀌면 1.0으로 올릴 수 있습니다. 개발자의 마음입니다.
-
-

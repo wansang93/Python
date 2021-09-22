@@ -1,95 +1,30 @@
-import csv
-import datetime
-import math
-import os
-import random
-import struct
-import tempfile
-import threading
-import time
-import tkinter.filedialog
-import tkinter.messagebox
-import tkinter.simpledialog
-import tkinter as tk
+# 컴퓨터 비전에서 배운 알고리즘들(RAW)
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pymysql
-import xlrd
-import xlsxwriter
+## 1. Bug check
 
-# ==================== Global Variable ====================
-window, canvas, paper = None, None, None
-in_h, in_w, in_image = 0, 0, []
-out_h, out_w, out_image = 0, 0, []
-file_name = ''
-VIEW_X, VIEW_Y = 512, 512
-# ========== Mouse Event ==========
-pan_yn = False
-sx, sy, ex, ey = [0] * 4
-# ========== Mask Value ==========
-# embossing mask(0)
-embossing = [
-    [-1, 0, 0],
-    [0, 0, 0],
-    [0, 0, 1]]
-# blurring mask(1)
-blurring = [
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9]]
-# sharpening mask(2)
-sharpening = [
-    [0, -1, 0],
-    [-1, 5, -1],
-    [0, -1, 0]]
-# edge detect mask(3)
-edge_detect = [
-    [0, 0, 0],
-    [-1, 1, 0],
-    [0, 0, 0]]
-# gaussian mask(4)
-gaussian = [
-    [1 / 16, 1 / 8, 1 / 16],
-    [1 / 8, 1 / 4, 1 / 8],
-    [1 / 16, 1 / 8, 1 / 16]]
-# high frequency(5)
-high_freq = [
-    [-1 / 9, -1 / 9, -1 / 9],
-    [-1 / 9, 8 / 9, -1 / 9],
-    [-1 / 9, -1 / 9, -1 / 9]]
-# low frequency(6)
-low_freq = [
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9]]
-mask_list = [
-    embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
-# ========== Server default ==========
-IP_ADDR = '192.168.111.10'
-USER_NAME = 'root'
-USER_PW = '1234'
-DB_NAME = 'bigdata_db'
-CHAR_SET = 'utf8'
-raw_file_list = []
+### 1-1. 파일을 열었는지 확인
 
-
-# ==================== Function Declaration ====================
-# ========== Bug Check ==========
+```python
 def is_open_file(fname):
     if not fname:
         status.configure(text='Open is failed. Please try again')
         return False
     return True
+```
 
+### 1-2. 파일 저장 유무 확인
 
+```python
 def is_save_file(fname):
     if not fname:
         status.configure(text=f'Save is failed. Please try again')
         return False
     return True
+```
 
+### 1-3. 빈 이미지 확인
 
+```python
 def is_empty_image():
     global out_image
     if len(out_image) == 0:
@@ -98,15 +33,24 @@ def is_empty_image():
             message='The image is empty, Please open image')
         return True
     return False
+```
 
+## 2. FILE I/O
 
-# ========== file I/O ==========
+파일 Open의 순서는 Open -> Load -> Equal -> Display New -> Display Out 입니다.
+
+### 2-1. malloc(메모리 확보)
+
+```python
 # memory allocation
 def malloc(h, w, initvalue=0):
     reg_memory = [[initvalue for _ in range(w)] for _ in range(h)]
     return reg_memory
+```
 
+### 2-2. Open Image
 
+```python
 # open image
 def open_image():
     global window, file_name
@@ -120,8 +64,11 @@ def open_image():
     load_image(file_name)
     equal_image()
     display_image()
+```
 
+### 2-3. Load Image
 
+```python
 # load image
 def load_image(filename):
     global in_h, in_w, in_image
@@ -138,8 +85,26 @@ def load_image(filename):
             for k in range(in_w):
                 # ord()는 아스키 값을 읽는 함수, 반대는 chr()이다.
                 in_image[i][k] = int(ord(rFp.read(1)))
+```
 
+### 2-4. Equal Image
 
+```python
+# equal image
+def equal_image():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    out_h = in_h
+    out_w = in_w
+    out_image = malloc(out_h, out_w)
+
+    for i in range(out_h):
+        for k in range(out_w):
+            out_image[i][k] = in_image[i][k]
+```
+
+### 2-5. Display New Image
+
+```python
 # display out image
 def display_image():
     global window, canvas, paper, file_name
@@ -182,8 +147,11 @@ def display_image():
     status.configure(
         text=f'({file_name}) In: {in_h}x{in_w}, Out: {out_h}x{out_w}',
     )
+```
 
+### 2-6. Save Image
 
+```python
 # save image
 def save_image():
     global out_h, out_w, out_image, window
@@ -205,21 +173,13 @@ def save_image():
             save_fp.write(struct.pack('B', out_image[i][j]))
     status.configure(text=f'Image is saved at {save_fp.name}')
     save_fp.close()
+```
 
+## 3. Pixel
 
-# ========== Vision Algorithm(0.01) ==========
-# equal image
-def equal_image():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    out_h = in_h
-    out_w = in_w
-    out_image = malloc(out_h, out_w)
+### 3-1. Brighten/Darken
 
-    for i in range(out_h):
-        for k in range(out_w):
-            out_image[i][k] = in_image[i][k]
-
-
+```python
 # bright control(+/-)
 def add_image():
     global in_h, in_w, in_image, out_image
@@ -239,10 +199,13 @@ def add_image():
             out_image[i][k] = v
 
     display_image()
+```
 
+### 3-2. Invert
 
-# contrast image
-def contrast_image():
+```python
+# invert image
+def invert_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
         return
@@ -253,8 +216,11 @@ def contrast_image():
             out_image[i][k] = 255 - in_image[i][k]
 
     display_image()
+```
 
+### 3-3. Parabola
 
+```python
 # para image
 def para_image():
     global in_h, in_w, in_image, out_image
@@ -271,9 +237,65 @@ def para_image():
             out_image[i][k] = lut[in_image[i][k]]
 
     display_image()
+```
 
+### 3-4. Morphing Image
 
-# bw image
+```python
+# morphing image
+def morph_image():
+    global window, canvas, paper, file_name, in_h, in_w, out_h, out_w, in_image, out_image
+    out_h = in_h
+    out_w = in_w
+    out_image = []
+    out_image = malloc(out_h, out_w)
+    # 추가 영상 선택
+    file_name2 = tk.filedialog.askopenfilename(
+        parent=window,
+        filetypes=(("RAW file", "*.raw"), ("All file", "*.*")),
+    )
+    if not is_open_file(file_name2):
+        return
+
+    fsize = os.path.getsize(file_name2)  # 파일의 크기(바이트)
+    in_h2 = in_w2 = int(math.sqrt(fsize))  # 핵심 코드
+
+    # 입력영상 메모리 확보
+    in_image2 = []
+    in_image2 = malloc(in_h2, in_w2)
+
+    # 파일 --> 메모리
+    with open(file_name2, 'rb') as rFp:
+        for i in range(in_h2):
+            for k in range(in_w2):
+                in_image2[i][k] = int(ord(rFp.read(1)))
+
+    def morp_func():
+        w1 = 1
+        w2 = 0
+        for _ in range(20):
+            for x in range(in_h):
+                for y in range(in_w):
+                    new_value = int(in_image[x][y] * w1 + in_image2[x][y] * w2)
+                    if new_value > 255:
+                        new_value = 255
+                    elif new_value < 0:
+                        new_value = 0
+                    out_image[x][y] = new_value
+            display_image()
+            w1 -= 0.05
+            w2 += 0.05
+            time.sleep(0.5)
+
+    threading.Thread(target=morp_func).start()
+```
+
+## 4. Statistics
+
+### 4-1. Black & White
+
+```python
+# black & white image
 def bw_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
@@ -294,9 +316,249 @@ def bw_image():
                 out_image[i][k] = 0
 
     display_image()
+```
 
+### 4-2. Zoom Out(Image Averaging)
 
-# ========== Vision Algorithm(0.02) ==========
+```python
+# zoom-out(image averaging)
+def zoom_out_image2():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    if is_empty_image():
+        return
+    equal_image()
+
+    scale = tkinter.simpledialog.askinteger(
+        'zoom_out', '(2~16)', minvalue=2, maxvalue=16)
+    out_h = in_h // scale
+    out_w = in_w // scale
+    out_image = []
+    out_image = malloc(out_h, out_w)
+
+    for i in range(in_h):
+        for k in range(in_w):
+            out_image[i // scale][k // scale] += in_image[i][k]
+    for i in range(out_h):
+        for k in range(out_w):
+            out_image[i][k] //= (scale * scale)
+
+    display_image()
+```
+
+### 4-3. Zoom In(Bilinear Interpolation)
+
+```python
+# zoom-in(bilinear interpolation)
+def zoom_in_image2():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    if is_empty_image():
+        return
+    equal_image()
+
+    scale = tkinter.simpledialog.askinteger(
+        'zoom_in', '(2~8)', minvalue=2, maxvalue=8)
+    out_h = in_h * scale
+    out_w = in_w * scale
+    out_image = []
+    out_image = malloc(out_h, out_w, 200)
+
+    for i in range(out_h):
+        for k in range(out_w):
+            # 실수위치 및 정수위치
+            rh = i / scale
+            rw = k / scale
+            ih = int(rh)
+            iw = int(rw)
+            # 실수와 정수의 차이값
+            x = rw - iw
+            y = rh - ih
+
+            if 0 <= ih < in_h - 1 and 0 <= iw < in_w - 1:
+                # 결정할 위치(N)의 상하좌우 픽셀
+                c1 = in_image[ih][iw]
+                c2 = in_image[ih][iw + 1]
+                c3 = in_image[ih + 1][iw + 1]
+                c4 = in_image[ih + 1][iw]
+                new_value = c1 *(1-y)*(1-x) + c2*(1-y)*x + c3*y*x + c4*y*(1-x)
+                out_image[i][k] = int(new_value)
+
+    display_image()
+```
+
+### 4-4. Histogram
+
+```python
+# histogram
+def histogram_image():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    incountlist = [0] * 256
+    outcountlist = [0] * 256
+
+    for i in range(in_h):
+        for k in range(in_w):
+            incountlist[in_image[i][k]] += 1
+
+    for i in range(out_h):
+        for k in range(out_w):
+            outcountlist[out_image[i][k]] += 1
+
+    plt.plot(incountlist)
+    plt.plot(outcountlist)
+    plt.show()
+```
+
+### 4-5. Histogram Custom
+
+```python
+# histogram custom
+def histogram_image_custom():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    outcountlist = [0] * 256
+    normalcountlist = [0] * 256
+
+    # 빈도수 계산
+    for i in range(out_h):
+        for k in range(out_w):
+            outcountlist[out_image[i][k]] += 1
+    max_val = max(outcountlist)
+    min_val = min(outcountlist)
+    high = 256
+
+    # 정규화 (카운트 값 - 최솟값) * high / (최댓값 - 최솟값)
+    for i in range(len(outcountlist)):
+        normalcountlist[i] = int((outcountlist[i] - min_val) * high / (max_val - min_val))
+
+    # 서브 윈도우에 만들기
+    sub_window = tk.Toplevel(window)
+    sub_window.geometry('256x256')
+    sub_canvas = tk.Canvas(sub_window, width=256, height=256)
+    sub_paper = tk.PhotoImage(width=256, height=256)
+    sub_canvas.create_image((256 // 2, 256 // 2), image=sub_paper, state='normal')
+
+    # 서브 윈도우 출력
+    for i in range(len(normalcountlist)):
+        for k in range(int(normalcountlist[i])):
+            data = 0
+            sub_paper.put('#{:02x}{:02x}{:02x}'.format(data, data, data), (i, 255 - k))
+    sub_canvas.pack(expand=1, anchor=tk.CENTER)
+    sub_window.mainloop()
+```
+
+### 4-6. Stretch
+
+```python
+# stretch
+def stretch_image():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    out_h = in_h
+    out_w = in_w
+    out_image = []
+    out_image = malloc(out_h, out_w)
+    max_val = min_val = in_image[0][0]
+    for i in range(in_h):
+        for k in range(in_w):
+            if in_image[i][k] < min_val:
+                min_val = in_image[i][k]
+            elif in_image[i][k] > max_val:
+                max_val = in_image[i][k]
+    for i in range(in_h):
+        for k in range(in_w):
+            out_image[i][k] = int(((in_image[i][k] - min_val) / (max_val - min_val)) * 255)
+
+    display_image()
+```
+
+### 4-7. End In
+
+```python
+# end_in
+def end_in_image():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    out_h = in_h
+    out_w = in_w
+    out_image = []
+    out_image = malloc(out_h, out_w)
+    max_val = min_val = in_image[0][0]
+    for i in range(in_h):
+        for k in range(in_w):
+            if in_image[i][k] < min_val:
+                min_val = in_image[i][k]
+            elif in_image[i][k] > max_val:
+                max_val = in_image[i][k]
+
+    min_add = tkinter.simpledialog.askinteger('min_add', '(0~255)', minvalue=0, maxvalue=255)
+    max_add = tkinter.simpledialog.askinteger('max_add', '(0~255)', minvalue=0, maxvalue=255)
+
+    min_val += min_add
+    max_val -= max_add
+
+    for i in range(in_h):
+        for k in range(in_w):
+            value = int(((in_image[i][k] - min_val) / (max_val - min_val)) * 255)
+            if value < 0:
+                value = 0
+            elif value > 255:
+                value = 255
+            out_image[i][k] = value
+
+    display_image()
+```
+
+### 4-8. Equalize
+
+```python
+# equalize
+def equalize_image():
+    global in_h, in_w, out_h, out_w, in_image, out_image
+    out_h = in_h
+    out_w = in_w
+    out_image = []
+    out_image = malloc(out_h, out_w)
+    histo = [0] * 256
+    sum_histo = [0] * 256
+    normal_histo = [0] * 256
+    # 히스토그램
+    for i in range(in_h):
+        for k in range(in_w):
+            histo[in_image[i][k]] += 1
+    # 누적히스토그램
+    s_value = 0
+    for i in range(len(histo)):
+        s_value += histo[i]
+        sum_histo[i] = s_value
+    # 정규화 누적 히스토그램
+    for i in range(len(sum_histo)):
+        normal_histo[i] = int(sum_histo[i] / (in_w * in_h) * 255)
+    # 영상처리
+    for i in range(in_h):
+        for k in range(in_w):
+            out_image[i][k] = normal_histo[in_image[i][k]]
+
+    display_image()
+```
+
+## 5. Geometry
+
+### 5-1. Upside Down
+
+```python
+# upside-down
+def up_down_image():
+    global in_h, in_w, in_image, out_image
+    if is_empty_image():
+        return
+    equal_image()
+
+    for i in range(in_h):
+        for k in range(in_w):
+            out_image[in_h-i-1][k] = in_image[i][k]
+
+    display_image()
+```
+
+### 5-2. Move
+
+```python
 # Move Display
 def move_image():
     global pan_yn
@@ -334,84 +596,11 @@ def mouse_drop(event):
     pan_yn = False
 
     display_image()
+```
 
+### 5-3. Zoom Out
 
-# upside-down
-def up_down_image():
-    global in_h, in_w, in_image, out_image
-    if is_empty_image():
-        return
-    equal_image()
-
-    for i in range(in_h):
-        for k in range(in_w):
-            out_image[in_h-i-1][k] = in_image[i][k]
-
-    display_image()
-
-
-# zoom-out(평균변환)
-def zoom_out_image2():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    if is_empty_image():
-        return
-    equal_image()
-
-    scale = tkinter.simpledialog.askinteger(
-        'zoom_out', '(2~16)', minvalue=2, maxvalue=16)
-    out_h = in_h // scale
-    out_w = in_w // scale
-    out_image = []
-    out_image = malloc(out_h, out_w)
-
-    for i in range(in_h):
-        for k in range(in_w):
-            out_image[i // scale][k // scale] += in_image[i][k]
-    for i in range(out_h):
-        for k in range(out_w):
-            out_image[i][k] //= (scale * scale)
-
-    display_image()
-
-
-# TODO: fix bug black edge 
-# zoom-in(양선형 보간)
-def zoom_in_image2():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    if is_empty_image():
-        return
-    equal_image()
-
-    scale = tkinter.simpledialog.askinteger(
-        'zoom_in', '(2~8)', minvalue=2, maxvalue=8)
-    out_h = in_h * scale
-    out_w = in_w * scale
-    out_image = []
-    out_image = malloc(out_h, out_w, 200)
-
-    for i in range(out_h):
-        for k in range(out_w):
-            # 실수위치 및 정수위치
-            rh = i / scale
-            rw = k / scale
-            ih = int(rh)
-            iw = int(rw)
-            # 실수와 정수의 차이값
-            x = rw - iw
-            y = rh - ih
-
-            if 0 <= ih < in_h - 1 and 0 <= iw < in_w - 1:
-                # 결정할 위치(N)의 상하좌우 픽셀
-                c1 = in_image[ih][iw]
-                c2 = in_image[ih][iw + 1]
-                c3 = in_image[ih + 1][iw + 1]
-                c4 = in_image[ih + 1][iw]
-                new_value = c1 *(1-y)*(1-x) + c2*(1-y)*x + c3*y*x + c4*y*(1-x)
-                out_image[i][k] = int(new_value)
-
-    display_image()
-
-
+```python
 # zoom-out
 def zoom_out_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
@@ -429,8 +618,11 @@ def zoom_out_image():
             out_image[i][k] = in_image[i * scale][k * scale]
 
     display_image()
+```
 
+### 5-4. Zoom In
 
+```python
 # zoom-in
 def zoom_in_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
@@ -448,8 +640,11 @@ def zoom_in_image():
             out_image[i][k] = in_image[i // scale][k // scale]
 
     display_image()
+```
 
+### 5-5. Rotate
 
+```python
 # rotate
 def rotate_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
@@ -474,114 +669,14 @@ def rotate_image():
                 out_image[xs][ys] = 255
 
     display_image()
+```
 
+## 6. Area
 
-# histogram
-def histogram_image():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    incountlist = [0] * 256
-    outcountlist = [0] * 256
+### 6-1. Mask
 
-    for i in range(in_h):
-        for k in range(in_w):
-            incountlist[in_image[i][k]] += 1
-
-    for i in range(out_h):
-        for k in range(out_w):
-            outcountlist[out_image[i][k]] += 1
-
-    plt.plot(incountlist)
-    plt.plot(outcountlist)
-    plt.show()
-
-
-# stretch
-def stretch_image():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    out_h = in_h
-    out_w = in_w
-    out_image = []
-    out_image = malloc(out_h, out_w)
-    max_val = min_val = in_image[0][0]
-    for i in range(in_h):
-        for k in range(in_w):
-            if in_image[i][k] < min_val:
-                min_val = in_image[i][k]
-            elif in_image[i][k] > max_val:
-                max_val = in_image[i][k]
-    for i in range(in_h):
-        for k in range(in_w):
-            out_image[i][k] = int(((in_image[i][k] - min_val) / (max_val - min_val)) * 255)
-
-    display_image()
-
-
-# end_in
-def end_in_image():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    out_h = in_h
-    out_w = in_w
-    out_image = []
-    out_image = malloc(out_h, out_w)
-    max_val = min_val = in_image[0][0]
-    for i in range(in_h):
-        for k in range(in_w):
-            if in_image[i][k] < min_val:
-                min_val = in_image[i][k]
-            elif in_image[i][k] > max_val:
-                max_val = in_image[i][k]
-
-    min_add = tkinter.simpledialog.askinteger('min_add', '(0~255)', minvalue=0, maxvalue=255)
-    max_add = tkinter.simpledialog.askinteger('max_add', '(0~255)', minvalue=0, maxvalue=255)
-
-    min_val += min_add
-    max_val -= max_add
-
-    for i in range(in_h):
-        for k in range(in_w):
-            value = int(((in_image[i][k] - min_val) / (max_val - min_val)) * 255)
-            if value < 0:
-                value = 0
-            elif value > 255:
-                value = 255
-            out_image[i][k] = value
-
-    display_image()
-
-
-# equalize
-def equalize_image():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    out_h = in_h
-    out_w = in_w
-    out_image = []
-    out_image = malloc(out_h, out_w)
-    histo = [0] * 256
-    sum_histo = [0] * 256
-    normal_histo = [0] * 256
-    # 히스토그램
-    for i in range(in_h):
-        for k in range(in_w):
-            histo[in_image[i][k]] += 1
-    # 누적히스토그램
-    s_value = 0
-    for i in range(len(histo)):
-        s_value += histo[i]
-        sum_histo[i] = s_value
-    # 정규화 누적 히스토그램
-    for i in range(len(sum_histo)):
-        normal_histo[i] = int(sum_histo[i] / (in_w * in_h) * 255)
-    # 영상처리
-    for i in range(in_h):
-        for k in range(in_w):
-            out_image[i][k] = normal_histo[in_image[i][k]]
-
-    display_image()
-
-
-# ========== Vision Algorithm(0.02) Endline ==========
-# ========== Vision Algorithm(0.03) ==========
-# Mask Processing
+```python
+# mask processing
 def mask_image(mask_number):
     global in_h, in_w, out_h, out_w, in_image, out_image
     global mask_list
@@ -628,95 +723,13 @@ def mask_image(mask_number):
             out_image[i][k] = int(value)
 
     display_image()
+```
 
+## 7. Format
 
-# ========== Vision Algorithm(0.03) Endline ==========
-# ========== Vision Algorithm(0.04) ==========
-def morph_image():
-    global window, canvas, paper, file_name, in_h, in_w, out_h, out_w, in_image, out_image
-    out_h = in_h
-    out_w = in_w
-    out_image = []
-    out_image = malloc(out_h, out_w)
-    # 추가 영상 선택
-    file_name2 = tk.filedialog.askopenfilename(
-        parent=window,
-        filetypes=(("RAW file", "*.raw"), ("All file", "*.*")),
-    )
-    if not is_open_file(file_name2):
-        return
+### 7-1. Save Temp Image
 
-    fsize = os.path.getsize(file_name2)  # 파일의 크기(바이트)
-    in_h2 = in_w2 = int(math.sqrt(fsize))  # 핵심 코드
-
-    # 입력영상 메모리 확보
-    in_image2 = []
-    in_image2 = malloc(in_h2, in_w2)
-
-    # 파일 --> 메모리
-    with open(file_name2, 'rb') as rFp:
-        for i in range(in_h2):
-            for k in range(in_w2):
-                in_image2[i][k] = int(ord(rFp.read(1)))
-
-    def morp_func():
-        w1 = 1
-        w2 = 0
-        for _ in range(20):
-            for x in range(in_h):
-                for y in range(in_w):
-                    new_value = int(in_image[x][y] * w1 + in_image2[x][y] * w2)
-                    if new_value > 255:
-                        new_value = 255
-                    elif new_value < 0:
-                        new_value = 0
-                    out_image[x][y] = new_value
-            display_image()
-            w1 -= 0.05
-            w2 += 0.05
-            time.sleep(0.5)
-
-    threading.Thread(target=morp_func).start()
-
-
-# ========== Vision Algorithm(0.04) Endline ==========
-# ========== Vision Algorithm(0.05) ==========
-# histogram_custom
-def histogram_image_custom():
-    global in_h, in_w, out_h, out_w, in_image, out_image
-    outcountlist = [0] * 256
-    normalcountlist = [0] * 256
-
-    # 빈도수 계산
-    for i in range(out_h):
-        for k in range(out_w):
-            outcountlist[out_image[i][k]] += 1
-    max_val = max(outcountlist)
-    min_val = min(outcountlist)
-    high = 256
-
-    # 정규화 (카운트 값 - 최솟값) * high / (최댓값 - 최솟값)
-    for i in range(len(outcountlist)):
-        normalcountlist[i] = int((outcountlist[i] - min_val) * high / (max_val - min_val))
-
-    # 서브 윈도우에 만들기
-    sub_window = tk.Toplevel(window)
-    sub_window.geometry('256x256')
-    sub_canvas = tk.Canvas(sub_window, width=256, height=256)
-    sub_paper = tk.PhotoImage(width=256, height=256)
-    sub_canvas.create_image((256 // 2, 256 // 2), image=sub_paper, state='normal')
-
-    # 서브 윈도우 출력
-    for i in range(len(normalcountlist)):
-        for k in range(int(normalcountlist[i])):
-            data = 0
-            sub_paper.put('#{:02x}{:02x}{:02x}'.format(data, data, data), (i, 255 - k))
-    sub_canvas.pack(expand=1, anchor=tk.CENTER)
-    sub_window.mainloop()
-
-
-# ========== Vision Algorithm(0.05) Endline ==========
-# ========== Vision Algorithm(0.06) ==========
+```python
 def save_temp_image():
     global out_h, out_w, out_image, raw_file_list
     save_fp = f'{tempfile.gettempdir()}/{str(random.randint(10000, 99999))}.raw'
@@ -729,8 +742,11 @@ def save_temp_image():
                 sf.write(struct.pack('B', out_image[i][j]))
 
     return save_fp
+```
 
+### 7-2. Get Avg, Max, Min
 
+```python
 # Get avg, max, min
 def find_state(full_name, height, width):
     image = malloc(height, width)
@@ -753,8 +769,11 @@ def find_state(full_name, height, width):
     avg = sum_val // (height * width)
 
     return avg, max_val, min_val
+```
 
+### 7-3. Upload in MySQL
 
+```python
 def upload_mysql():
     global raw_file_list
 
@@ -765,15 +784,15 @@ def upload_mysql():
 
     # DB 연결
     con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
-                          password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+        password=USER_PW, db=DB_NAME, charset=CHAR_SET)
     cur = con.cursor()
 
     # DB 테이블 확인
     try:
         sql = ('CREATE TABLE rawimage_tbl (raw_id INT AUTO_INCREMENT PRIMARY KEY, '
-               'raw_height smallint, raw_width smallint, raw_fname VARCHAR(30), raw_extname CHAR(5), '
-               'raw_update DATE, raw_uploader VARCHAR(20), raw_avg TINYINT UNSIGNED, '
-               'raw_max TINYINT UNSIGNED, raw_min TINYINT UNSIGNED, raw_data LONGBLOB);')
+            'raw_height smallint, raw_width smallint, raw_fname VARCHAR(30), raw_extname CHAR(5), '
+            'raw_update DATE, raw_uploader VARCHAR(20), raw_avg TINYINT UNSIGNED, '
+            'raw_max TINYINT UNSIGNED, raw_min TINYINT UNSIGNED, raw_data LONGBLOB);')
         cur.execute(sql)
     except:
         pass
@@ -799,11 +818,11 @@ def upload_mysql():
 
         # sql 작성
         sql = ('INSERT INTO rawimage_tbl(raw_id, raw_height, raw_width, '
-               'raw_fname, raw_extname, raw_update, raw_uploader, '
-               'raw_avg, raw_max, raw_min, raw_data) '
-               f'VALUES(NULL, {str(height)}, {str(width)}, "{fname}", "{extname}",'
-               f' "{up_date}", "{up_user}", {avg}, {max_val}, {min_val}, %s);'
-               )
+            'raw_fname, raw_extname, raw_update, raw_uploader, '
+            'raw_avg, raw_max, raw_min, raw_data) '
+            f'VALUES(NULL, {str(height)}, {str(width)}, "{fname}", "{extname}",'
+            f' "{up_date}", "{up_user}", {avg}, {max_val}, {min_val}, %s);'
+            )
 
         # 서버로 보내기
         cur.execute(sql, (bin_data,))
@@ -812,17 +831,20 @@ def upload_mysql():
     # 서버 종료
     cur.close()
     con.close()
+```
 
+### 7-4. Download from MySQL
 
+```python
 # download from mysql
 def download_mysql():
     # DB 연결
     con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
-                          password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+        password=USER_PW, db=DB_NAME, charset=CHAR_SET)
     cur = con.cursor()
 
     sql = ('SELECT raw_id, raw_fname, raw_extname, '
-           'raw_height, raw_width FROM rawimage_tbl')
+        'raw_height, raw_width FROM rawimage_tbl')
     cur.execute(sql)
 
     query_list = cur.fetchall()
@@ -869,10 +891,11 @@ def download_mysql():
     # 서버 종료
     cur.close()
     con.close()
+```
 
+### 7-5. Save as CSV
 
-# ========== Vision Algorithm(0.06) Endline ==========
-# ========== Vision Algorithm(0.07) ==========
+```python
 def save_as_csv():
     global window, out_image, out_h, out_w
     if len(out_image) == 0:
@@ -895,8 +918,11 @@ def save_as_csv():
             for j in range(out_w):
                 row_list = [i, j, out_image[i][j]]
                 csv_writer.writerow(row_list)
+```
 
+### 7-6. Open CSV File
 
+```python
 def open_csv():
     global window, file_name
     file_name = tkinter.filedialog.askopenfilename(
@@ -909,8 +935,11 @@ def open_csv():
     load_csv(file_name)
     equal_image()
     display_image()
+```
 
+### 7-7. Load CSV File
 
+```python
 def load_csv(f_name):
     global in_h, in_w, in_image
     f_size = 0
@@ -924,10 +953,11 @@ def load_csv(f_name):
         for row_list in rfp:
             col, row, value = map(int, row_list.strip().split(','))
             in_image[col][row] = value
+```
 
+### 7-8. Save as Excel
 
-# ========== Vision Algorithm(0.07) Endline ==========
-# ========== Vision Algorithm(0.08) ==========
+```python
 # save as excel
 def save_as_excel():
     global window, out_image, out_h, out_w
@@ -956,8 +986,11 @@ def save_as_excel():
             worksheet.write(i, j, out_image[i][j])
 
     workbook.close()
+```
 
+### 7-9. Save as Excel Art
 
+```python
 # save as excel art
 def save_as_excel_art():
     global window, out_image, out_h, out_w
@@ -999,8 +1032,11 @@ def save_as_excel_art():
             worksheet.write(i, j, '', cell_format)
 
     workbook.close()
+```
 
+### 7-10. Open Excel File
 
+```python
 # open excel
 def open_excel():
     global window, file_name
@@ -1014,8 +1050,11 @@ def open_excel():
     load_excel(file_name)
     equal_image()
     display_image()
+```
 
+### 7-11. Load Excel
 
+```python
 # load excel
 def load_excel(f_name):
     global in_h, in_w, in_image
@@ -1029,79 +1068,4 @@ def load_excel(f_name):
     for i in range(in_h):
         for j in range(in_w):
             in_image[i][j] = int(worksheet.cell_value(i, j))
-
-
-# ========== Vision Algorithm(0.08) Endline ==========
-# ==================== Main code ====================
-if __name__ == '__main__':
-    window = tk.Tk()
-    window.geometry('600x600')
-    window.title('Computer Vision (Ver 0.09)')
-
-    status = tk.Label(window, text='Please open file', bd=1, relief=tk.SUNKEN, anchor=tk.W)
-    status.pack(side=tk.BOTTOM, fill=tk.X)
-
-    canvas = tk.Canvas(window, height=512, width=512, bg='white')
-    canvas.pack(expand=1, anchor=tk.CENTER)
-
-    main_menu = tk.Menu(window)
-    window.config(menu=main_menu)
-
-    file_menu = tk.Menu(main_menu)
-    main_menu.add_cascade(label='File', menu=file_menu)
-    file_menu.add_command(label='Open RAW file', command=open_image)
-    file_menu.add_separator()
-    file_menu.add_command(label='Save file', command=save_image)
-
-    comvision_menu1 = tk.Menu(main_menu)
-    main_menu.add_cascade(label='Pixel', menu=comvision_menu1)
-    comvision_menu1.add_command(label='Brighten/Darken', command=add_image)
-    comvision_menu1.add_command(label='Contrast', command=contrast_image)
-    comvision_menu1.add_command(label='Parabola', command=para_image)
-    comvision_menu1.add_separator()
-    comvision_menu1.add_command(label="Morphing_image", command=morph_image)
-
-    comvision_menu2 = tk.Menu(main_menu)
-    main_menu.add_cascade(label='Statistics', menu=comvision_menu2)
-    comvision_menu2.add_command(label='Black&White', command=bw_image)
-    comvision_menu2.add_command(label='Zoom_out(better)', command=zoom_out_image2)
-    comvision_menu2.add_command(label='Zoom_in(better)', command=zoom_in_image2)
-    comvision_menu2.add_separator()
-    comvision_menu2.add_command(label='Histogram', command=histogram_image)
-    comvision_menu2.add_command(label='Histogram_custom', command=histogram_image_custom)
-    comvision_menu2.add_command(label='Stretch', command=stretch_image)
-    comvision_menu2.add_command(label='End_In', command=end_in_image)
-    comvision_menu2.add_command(label='Equalize', command=equalize_image)
-
-    comvision_menu3 = tk.Menu(main_menu)
-    main_menu.add_cascade(label='Geometry', menu=comvision_menu3)
-    comvision_menu3.add_command(label='Up_Down', command=up_down_image)
-    comvision_menu3.add_command(label='Move', command=move_image)
-    comvision_menu3.add_command(label='Zoom_out', command=zoom_out_image)
-    comvision_menu3.add_command(label='Zoom_in', command=zoom_in_image)
-    comvision_menu3.add_command(label='Rotate', command=rotate_image)
-
-    comvision_menu4 = tk.Menu(main_menu)
-    main_menu.add_cascade(label='Area', menu=comvision_menu4)
-    comvision_menu4.add_command(label='Embossing', command=lambda: mask_image(0))
-    comvision_menu4.add_command(label='Blurring', command=lambda: mask_image(1))
-    comvision_menu4.add_command(label='Sharpening', command=lambda: mask_image(2))
-    comvision_menu4.add_command(label='Edge detect', command=lambda: mask_image(3))
-    comvision_menu4.add_command(label='Gaussian', command=lambda: mask_image(4))
-    comvision_menu4.add_command(label='High freq', command=lambda: mask_image(5))
-    comvision_menu4.add_command(label='Low freq', command=lambda: mask_image(6))
-
-    comvision_menu5 = tk.Menu(main_menu)
-    main_menu.add_cascade(label='Format', menu=comvision_menu5)
-    comvision_menu5.add_command(label='Upload in MySQL', command=upload_mysql)
-    comvision_menu5.add_command(label='Download from MySQL', command=download_mysql)
-    comvision_menu5.add_separator()
-    comvision_menu5.add_command(label='Save as CSV file', command=save_as_csv)
-    comvision_menu5.add_command(label='Open CSV file', command=open_csv)
-    comvision_menu5.add_separator()
-    comvision_menu5.add_command(label='Save as Excel file', command=save_as_excel)
-    comvision_menu5.add_command(label='Save as Excel Art', command=save_as_excel_art)
-    comvision_menu5.add_command(label='Open Excel file', command=open_excel)
-
-    open_image()
-    window.mainloop()
+```

@@ -1,46 +1,3 @@
-# 11일차 파이썬 총 복습 및 리뷰 190619
-
-오늘은 지금까지 한 파이썬 총 복습 및 리뷰의 시간이였습니다.
-
-컴퓨터 비전 알고리즘 요약 -> [알고리즘 요약](./Computer%20Vision.md)
-
-복습 및 리뷰의 자세한 내용은 륜선이 누나 필기 링크 -> [https://github.com/RYUNSUN/](https://github.com/RYUNSUN/AI_Curriculum_Multicampus/blob/master/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0(%EB%94%A5%EB%9F%AC%EB%8B%9D)%20%ED%99%9C%EC%9A%A9%20AI%20%EC%84%A4%EA%B3%84/%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EA%B8%B0%EC%B4%88_Python/Contents/190619_day11.md)
-
-## 복습 1~10일차
-
-1. 컴퓨터 : 크게 H/W 와 S/W로 나누어짐
-   - H/W : CPU(사람, 두뇌), RAM(작업대), Disk(책장)
-     - CPU : Intel Core i-3, 5, 7, 9 + 1~9세대, 코어갯수(2, 4, 8, 16...)
-     - RAM : 전원이 끊기면 다 날라감, 삼성, DDR4(8GB, 16GB...)
-     - Disk : HDD(1TB, 2TB, 4TB...) 오래사용하면 깨질 수 있다, SSD - 안정성이 높다
-     - Graphic Card : 내장(CPU) / 외장(Geoforce)
-   - S/W : OS + App
-     - OS : Unix, Linux, Windows, Mac
-       - Unix : 주로 회사제품에 사용, IBM AIX, HP UX
-       - Linux : Redhat Enterpise(RHEL), CentOS, Fedora(Beta), Oracle Unix 등
-         - Redhat 계열 : 기업화 된 배포판 - RHEL, CentOS, Fedora, Oracle Unix
-         - Debian 계열 : Ubuntu
-       - Windows : Windows7, 10, Windows Server 2016, 2019...
-       - Mac : Apple
-2. 가상머신
-   - Azure, VMware, Virtual Box
-   - OS 설치 : Windows 2016, 2019, Linux
-3. DBMS
-   - IBM : DB2
-   - Oracle DB : 대규모 - 버전 10g, 11gR1/R2, 12cR1/R2, 18c
-   - SQL Server : 중대규모 - 2008, 2008R2, 2012, 2014, 2016, 2017, 2019
-   - MySQL : 중소규모 - 5.6, 5.7, 8.0
-   - MariaDB : 오픈소스(무료) - 버전 10.1, 10.2, 10.3, 10.4(RC)
-4. DBMS 구축 및 데이터 활용
-   - DBMS설치-> DB생성 -> Table생성 -> 데이터 입력/수정/삭제
-   - 2일차 : DB Server(MySQL)와 DB Client(HeidiSQL) 연동하여 조작
-   - 3일차 : Python에서 pymysql이라는 외부 라이브러리를 사용하여 MySQL 조작
-
-## 과제
-
-### 컴퓨터 비전 흑백 이미지(.raw) 시각화 with NumPy Version 1.01
-
-``` python
 import csv
 import datetime
 import math
@@ -78,9 +35,9 @@ embossing = [
     [0, 0, 1]]
 # blurring mask(1)
 blurring = [
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9]]
+    [1/9, 1/9, 1/9],
+    [1/9, 1/9, 1/9],
+    [1/9, 1/9, 1/9]]
 # sharpening mask(2)
 sharpening = [
     [0, -1, 0],
@@ -93,19 +50,19 @@ edge_detect = [
     [0, 0, 0]]
 # gaussian mask(4)
 gaussian = [
-    [1 / 16, 1 / 8, 1 / 16],
-    [1 / 8, 1 / 4, 1 / 8],
-    [1 / 16, 1 / 8, 1 / 16]]
+    [1/16, 1/8, 1/16],
+    [1/8, 1/4, 1/8],
+    [1/16, 1/8, 1/16]]
 # high frequency(5)
 high_freq = [
-    [-1 / 9, -1 / 9, -1 / 9],
-    [-1 / 9, 8 / 9, -1 / 9],
-    [-1 / 9, -1 / 9, -1 / 9]]
+    [-1/9, -1/9, -1/9],
+    [-1/9, 8/9, -1/9],
+    [-1/9, -1/9, -1/9]]
 # low frequency(6)
 low_freq = [
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9]]
+    [1/9, 1/9, 1/9],
+    [1/9, 1/9, 1/9],
+    [1/9, 1/9, 1/9]]
 mask_list = [
     embossing, blurring, sharpening, edge_detect, gaussian, high_freq, low_freq]
 # ========== Server default ==========
@@ -119,15 +76,15 @@ raw_file_list = []
 
 # ==================== Function Declaration ====================
 # ========== Bug Check ==========
-def is_open_file(fname):
-    if not fname:
+def is_open_file(file_name):
+    if not file_name:
         status.configure(text='Open is failed. Please try again')
         return False
     return True
 
 
-def is_save_file(fname):
-    if not fname:
+def is_save_file(file_name):
+    if not file_name:
         status.configure(text=f'Save is failed. Please try again')
         return False
     return True
@@ -146,17 +103,18 @@ def is_empty_image():
 # ========== file I/O ==========
 # memory allocation
 def malloc(h, w, initvalue=0):
-    reg_memory = [[initvalue for _ in range(w)] for _ in range(h)]
-    return reg_memory
+    ret_memory = [[initvalue for _ in range(w)] for _ in range(h)]
+    return ret_memory
 
 
 # open image
 def open_image():
     global window, file_name
-    file_name = tkinter.filedialog.askopenfilename(
-        parent=window,
-        filetypes=(('RAW file', '*.raw'), ('All file', '*.*')),
-    )
+    file_name = 'D:/☆☆☆멀캠생활/Image/Pet_RAW(256x256)/cat01_256.raw'
+    # file_name = tkinter.filedialog.askopenfilename(
+    #     parent=window,
+    #     filetypes=(('RAW file', '*.raw'), ('All file', '*.*')),
+    # )
     if not is_open_file(file_name):
         return
 
@@ -166,17 +124,17 @@ def open_image():
 
 
 # load image
-def load_image(filename):
+def load_image(file_name):
     global in_h, in_w, in_image
-    # in_h, in_w값 넣기
-    f_size = os.path.getsize(filename)  # f_size = getsize(filename)
+    f_size = os.path.getsize(file_name)  # f_size = getsize(filename)
     # only upload a square image
+    # in_h, in_w값 넣기
     in_h = int(math.sqrt(f_size))
     in_w = int(math.sqrt(f_size))
     in_image = malloc(in_h, in_w)
 
     # 파일 -> 메모리
-    with open(filename, 'rb') as rFp:
+    with open(file_name, 'rb') as rFp:
         for i in range(in_h):
             for k in range(in_w):
                 # ord()는 아스키 값을 읽는 함수, 반대는 chr()이다.
@@ -271,7 +229,11 @@ def add_image():
     equal_image()
 
     value = tkinter.simpledialog.askinteger(
-        'bright +/-', '(-255~255)', minvalue=-255, maxvalue=255)
+        'bright +/-',
+        '(-255~255)',
+        minvalue=-255,
+        maxvalue=255
+    )
     for i in range(in_h):
         for k in range(in_w):
             v = int(in_image[i][k] + value)
@@ -284,8 +246,8 @@ def add_image():
     display_image()
 
 
-# contrast image
-def contrast_image():
+# invert image
+def invert_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
         return
@@ -298,25 +260,25 @@ def contrast_image():
     display_image()
 
 
-# para image
+# parabola image
 def para_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
         return
     equal_image()
 
-    lut = [0 for _ in range(256)]
+    LUT = [0 for _ in range(256)]
     for value in range(256):
-        lut[value] = int(255 - 255 * math.pow(value / 128 - 1, 2))
+        LUT[value] = int(255 - 255 * math.pow(value / 128 - 1, 2))
 
     for i in range(in_h):
         for k in range(in_w):
-            out_image[i][k] = lut[in_image[i][k]]
+            out_image[i][k] = LUT[in_image[i][k]]
 
     display_image()
 
 
-# bw image
+# black & white image
 def bw_image():
     global in_h, in_w, in_image, out_image
     if is_empty_image():
@@ -342,7 +304,7 @@ def bw_image():
 # ========== Vision Algorithm(0.02) ==========
 # Move Display
 def move_image():
-    global pan_yn
+    global pan_yn, canvas
     if is_empty_image():
         return
 
@@ -393,7 +355,7 @@ def up_down_image():
     display_image()
 
 
-# zoom-out(평균변환)
+# zoom-out(image averaging)
 def zoom_out_image2():
     global in_h, in_w, out_h, out_w, in_image, out_image
     if is_empty_image():
@@ -417,7 +379,7 @@ def zoom_out_image2():
     display_image()
 
 
-# zoom-in(양선형 보간)
+# zoom-in(bilinear interpolation)
 def zoom_in_image2():
     global in_h, in_w, out_h, out_w, in_image, out_image
     if is_empty_image():
@@ -426,10 +388,10 @@ def zoom_in_image2():
 
     scale = tkinter.simpledialog.askinteger(
         'zoom_in', '(2~8)', minvalue=2, maxvalue=8)
-    out_h = in_h * scale
-    out_w = in_w * scale
+    out_h = int(in_h * scale)
+    out_w = int(in_w * scale)
     out_image = []
-    out_image = malloc(out_h, out_w)
+    out_image = malloc(out_h, out_w, 200)
 
     for i in range(out_h):
         for k in range(out_w):
@@ -459,6 +421,8 @@ def zoom_out_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
     if is_empty_image():
         return
+    equal_image()
+
     scale = tkinter.simpledialog.askinteger(
         'zoom_out', '(2~16)', minvalue=2, maxvalue=16)
     out_h = in_h // scale
@@ -478,6 +442,7 @@ def zoom_in_image():
     global in_h, in_w, out_h, out_w, in_image, out_image
     if is_empty_image():
         return
+    equal_image()
 
     scale = tkinter.simpledialog.askinteger(
         'zoom_in', '(2~8)', minvalue=2, maxvalue=8)
@@ -623,7 +588,7 @@ def equalize_image():
 
 # ========== Vision Algorithm(0.02) Endline ==========
 # ========== Vision Algorithm(0.03) ==========
-# Mask Processing
+# mask processing
 def mask_image(mask_number):
     global in_h, in_w, out_h, out_w, in_image, out_image
     global mask_list
@@ -674,6 +639,7 @@ def mask_image(mask_number):
 
 # ========== Vision Algorithm(0.03) Endline ==========
 # ========== Vision Algorithm(0.04) ==========
+# morphing image
 def morph_image():
     global window, canvas, paper, file_name, in_h, in_w, out_h, out_w, in_image, out_image
     out_h = in_h
@@ -723,7 +689,7 @@ def morph_image():
 
 # ========== Vision Algorithm(0.04) Endline ==========
 # ========== Vision Algorithm(0.05) ==========
-# histogram_custom
+# histogram custom
 def histogram_image_custom():
     global in_h, in_w, out_h, out_w, in_image, out_image
     outcountlist = [0] * 256
@@ -807,15 +773,15 @@ def upload_mysql():
 
     # DB 연결
     con = pymysql.connect(host=IP_ADDR, user=USER_NAME,
-                          password=USER_PW, db=DB_NAME, charset=CHAR_SET)
+        password=USER_PW, db=DB_NAME, charset=CHAR_SET)
     cur = con.cursor()
 
     # DB 테이블 확인
     try:
         sql = ('CREATE TABLE rawimage_tbl (raw_id INT AUTO_INCREMENT PRIMARY KEY, '
-               'raw_height smallint, raw_width smallint, raw_fname VARCHAR(30), raw_extname CHAR(5), '
-               'raw_update DATE, raw_uploader VARCHAR(20), raw_avg TINYINT UNSIGNED, '
-               'raw_max TINYINT UNSIGNED, raw_min TINYINT UNSIGNED, raw_data LONGBLOB);')
+            'raw_height smallint, raw_width smallint, raw_fname VARCHAR(30), raw_extname CHAR(5), '
+            'raw_update DATE, raw_uploader VARCHAR(20), raw_avg TINYINT UNSIGNED, '
+            'raw_max TINYINT UNSIGNED, raw_min TINYINT UNSIGNED, raw_data LONGBLOB);')
         cur.execute(sql)
     except:
         pass
@@ -1098,7 +1064,7 @@ if __name__ == '__main__':
     comvision_menu1 = tk.Menu(main_menu)
     main_menu.add_cascade(label='Pixel', menu=comvision_menu1)
     comvision_menu1.add_command(label='Brighten/Darken', command=add_image)
-    comvision_menu1.add_command(label='Contrast', command=contrast_image)
+    comvision_menu1.add_command(label='Invert', command=invert_image)
     comvision_menu1.add_command(label='Parabola', command=para_image)
     comvision_menu1.add_separator()
     comvision_menu1.add_command(label="Morphing_image", command=morph_image)
@@ -1147,5 +1113,3 @@ if __name__ == '__main__':
 
     open_image()
     window.mainloop()
-
-```
